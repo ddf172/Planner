@@ -3,14 +3,13 @@
 # Configuration variables
 CONTAINER_NAME = cpp-qt-dev
 IMAGE_NAME = my-cpp-qt-dev
-# Fix for Windows/MSYS path issues
-WORKSPACE_DIR = $(subst \,/,$(CURDIR))/workspace
 HOME_VOLUME_NAME = cpp-qt-home-volume
+WORKSPACE_DIR = $(subst \,/,$(CURDIR))/workspace
 
-# Add this for all Docker commands to prevent path conversion in MSYS
-DOCKER = MSYS_NO_PATHCONV=1 docker
+# Default docker command
+DOCKER = docker
 
-.PHONY: build start stop connect status clean clean-all rebuild
+.PHONY: build start-wsl start-linux start-mac stop connect status clean clean-all rebuild
 
 # Building Docker image
 build:
@@ -18,8 +17,38 @@ build:
 	@mkdir -p $(WORKSPACE_DIR)
 	@$(DOCKER) build -t $(IMAGE_NAME) .
 
-# Starting and configuring X-server
-start:
+# Starting container in WSL environment
+start-wsl:
+	@echo "Starting in WSL environment..."
+	@if [ "$$($(DOCKER) ps -q -f name=$(CONTAINER_NAME))" ]; then \
+		echo "Container is already running. Use 'make connect'."; \
+	elif [ "$$($(DOCKER) ps -aq -f name=$(CONTAINER_NAME))" ]; then \
+		echo "Resuming stopped container..."; \
+		$(DOCKER) start $(CONTAINER_NAME); \
+		$(DOCKER) exec -it $(CONTAINER_NAME) /bin/bash; \
+	else \
+		echo "Creating new container..."; \
+		$(DOCKER) volume create $(HOME_VOLUME_NAME); \
+		$(DOCKER) run -it \
+			--name $(CONTAINER_NAME) \
+			-v $(WORKSPACE_DIR):/workspace \
+			-v $(HOME_VOLUME_NAME):/root \
+			-v /tmp/.X11-unix:/tmp/.X11-unix \
+			-v /mnt/wslg:/mnt/wslg \
+			-e DISPLAY=:0 \
+			-e WAYLAND_DISPLAY \
+            -e XDG_RUNTIME_DIR \
+            -e PULSE_SERVER \
+			-p 2222:22 \
+			--network host \
+			--security-opt apparmor:unconfined \
+			-w /workspace \
+			$(IMAGE_NAME); \
+	fi
+
+# Starting container in Linux environment
+start-linux:
+	@echo "Starting in Linux environment..."
 	@xhost +local:docker > /dev/null 2>&1 || true
 	@if [ "$$($(DOCKER) ps -q -f name=$(CONTAINER_NAME))" ]; then \
 		echo "Container is already running. Use 'make connect'."; \
@@ -34,11 +63,50 @@ start:
 			--name $(CONTAINER_NAME) \
 			-v $(WORKSPACE_DIR):/workspace \
 			-v $(HOME_VOLUME_NAME):/root \
+			-v /tmp/.X11-unix:/tmp/.X11-unix \
 			-e DISPLAY=$(DISPLAY) \
 			-p 2222:22 \
 			--network host \
+			--privileged \
 			-w /workspace \
 			$(IMAGE_NAME); \
+	fi
+
+# Starting container in macOS environment
+start-mac:
+	@echo "Starting in macOS environment..."
+	@echo "Make sure XQuartz is running and allows network clients"
+	@if [ "$$($(DOCKER) ps -q -f name=$(CONTAINER_NAME))" ]; then \
+		echo "Container is already running. Use 'make connect'."; \
+	elif [ "$$($(DOCKER) ps -aq -f name=$(CONTAINER_NAME))" ]; then \
+		echo "Resuming stopped container..."; \
+		$(DOCKER) start $(CONTAINER_NAME); \
+		$(DOCKER) exec -it $(CONTAINER_NAME) /bin/bash; \
+	else \
+		echo "Creating new container..."; \
+		$(DOCKER) volume create $(HOME_VOLUME_NAME); \
+		$(DOCKER) run -it \
+			--name $(CONTAINER_NAME) \
+			-v $(WORKSPACE_DIR):/workspace \
+			-v $(HOME_VOLUME_NAME):/root \
+			-e DISPLAY=host.docker.internal:0 \
+			-e LIBGL_ALWAYS_INDIRECT=1 \
+			-p 2222:22 \
+			-w /workspace \
+			$(IMAGE_NAME); \
+	fi
+
+# General start (tries to auto-detect system)
+start:
+	@if [ -d /mnt/c/Windows ]; then \
+		echo "Detected WSL, redirecting to start-wsl..."; \
+		$(MAKE) start-wsl; \
+	elif [ "$$(uname)" = "Darwin" ]; then \
+		echo "Detected macOS, redirecting to start-mac..."; \
+		$(MAKE) start-mac; \
+	else \
+		echo "Detected Linux, redirecting to start-linux..."; \
+		$(MAKE) start-linux; \
 	fi
 
 # Stopping container

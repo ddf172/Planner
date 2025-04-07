@@ -19,6 +19,7 @@ RUN apt-get update && apt-get install -y \
     qt6-base-dev \
     qt6-tools-dev \
     qt6-tools-dev-tools \
+    qtcreator \
     libqt6core6 \
     libqt6gui6 \
     libqt6widgets6 \
@@ -28,6 +29,10 @@ RUN apt-get update && apt-get install -y \
     ninja-build \
     ccache \
     openssh-server \
+    x11-apps \
+    x11-utils \
+    mesa-utils \
+    dbus-x11 \
     && rm -rf /var/lib/apt/lists/*
 
 # Configure SSH for remote development
@@ -48,7 +53,9 @@ RUN echo 'export PS1="\[\e[1;32m\][\[\e[m\]\[\e[1;34m\]Root\[\e[m\]\[\e[1;32m\]]
     echo "echo ''" >> /root/.bashrc && \
     echo "echo '  C++/Qt Development Environment'" >> /root/.bashrc && \
     echo "echo '  ----------------------------'" >> /root/.bashrc && \
-    echo "echo ''" >> /root/.bashrc
+    echo "echo ''" >> /root/.bashrc && \
+    echo "# Auto-configure display for WSL" >> /root/.bashrc && \
+    echo "export DISPLAY=\$(grep -m 1 nameserver /etc/resolv.conf | awk '{print \$2}'):0.0" >> /root/.bashrc
 
 # Expose SSH port
 EXPOSE 22
