@@ -25,7 +25,7 @@ start-wsl:
 	elif [ "$$($(DOCKER) ps -aq -f name=$(CONTAINER_NAME))" ]; then \
 		echo "Resuming stopped container..."; \
 		$(DOCKER) start $(CONTAINER_NAME); \
-		$(DOCKER) exec -it $(CONTAINER_NAME) /bin/bash; \
+		$(DOCKER) exec -it $(CONTAINER_NAME) bash -c "export DISPLAY=:0 && /bin/bash"; \
 	else \
 		echo "Creating new container..."; \
 		$(DOCKER) volume create $(HOME_VOLUME_NAME); \
@@ -37,13 +37,13 @@ start-wsl:
 			-v /mnt/wslg:/mnt/wslg \
 			-e DISPLAY=:0 \
 			-e WAYLAND_DISPLAY \
-            -e XDG_RUNTIME_DIR \
-            -e PULSE_SERVER \
+			-e XDG_RUNTIME_DIR \
+			-e PULSE_SERVER \
 			-p 2222:22 \
 			--network host \
 			--security-opt apparmor:unconfined \
 			-w /workspace \
-			$(IMAGE_NAME); \
+			$(IMAGE_NAME) bash -c "export DISPLAY=:0 && /bin/bash"; \
 	fi
 
 # Starting container in Linux environment
