@@ -7,8 +7,8 @@ ENV TZ=UTC
 # Installing basic tools and Qt
 RUN apt-get update && apt-get install -y \
     build-essential \
-	libgl1-mesa-dev \
-	libgl1-mesa-glx \
+    libgl1-mesa-dev \
+    libgl1-mesa-glx \
     libx11-dev \
     cmake \
     git \
