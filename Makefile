@@ -76,6 +76,8 @@ start-linux:
 start-mac:
 	@echo "Starting in macOS environment..."
 	@echo "Make sure XQuartz is running and allows network clients"
+	@DISPLAY_IP=$$(ipconfig getifaddr en0);
+	@xhost +$$(ipconfig getifaddr en0);
 	@if [ "$$($(DOCKER) ps -q -f name=$(CONTAINER_NAME))" ]; then \
 		echo "Container is already running. Use 'make connect'."; \
 	elif [ "$$($(DOCKER) ps -aq -f name=$(CONTAINER_NAME))" ]; then \
@@ -89,7 +91,7 @@ start-mac:
 			--name $(CONTAINER_NAME) \
 			-v $(WORKSPACE_DIR):/workspace \
 			-v $(HOME_VOLUME_NAME):/root \
-			-e DISPLAY=host.docker.internal:0 \
+			-e DISPLAY=$$(ipconfig getifaddr en0):0 \
 			-e LIBGL_ALWAYS_INDIRECT=1 \
 			-p 2222:22 \
 			-w /workspace \

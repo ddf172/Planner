@@ -53,9 +53,7 @@ RUN echo 'export PS1="\[\e[1;32m\][\[\e[m\]\[\e[1;34m\]Root\[\e[m\]\[\e[1;32m\]]
     echo "echo ''" >> /root/.bashrc && \
     echo "echo '  C++/Qt Development Environment'" >> /root/.bashrc && \
     echo "echo '  ----------------------------'" >> /root/.bashrc && \
-    echo "echo ''" >> /root/.bashrc && \
-    echo "# Auto-configure display for WSL" >> /root/.bashrc && \
-    echo "export DISPLAY=:0" >> /root/.bashrc
+    echo "echo ''" >> /root/.bashrc 
 
 # Expose SSH port
 EXPOSE 22
