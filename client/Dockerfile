@@ -40,7 +40,7 @@ RUN apt-get update && apt-get install -y \
 
 # Configure SSH for remote development
 RUN mkdir -p /run/sshd && \
-    echo "root:password" | chpasswd && \
+    echo "root:root" | chpasswd && \
     sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
 # Creating workspace directory
