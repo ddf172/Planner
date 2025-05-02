@@ -5,6 +5,7 @@ CONTAINER_NAME = cpp-qt-dev
 IMAGE_NAME = my-cpp-qt-dev
 HOME_VOLUME_NAME = cpp-qt-home-volume
 WORKSPACE_DIR = $(subst \,/,$(CURDIR))/workspace
+COMMON_DIR = $(subst \,/,$(CURDIR))/../common
 
 # Default docker command
 DOCKER = docker
@@ -35,6 +36,7 @@ start-wsl:
 			-v $(HOME_VOLUME_NAME):/root \
 			-v /tmp/.X11-unix:/tmp/.X11-unix \
 			-v /mnt/wslg:/mnt/wslg \
+			-v $(COMMON_DIR):/common \
 			-e DISPLAY=:0 \
 			-e WAYLAND_DISPLAY \
 			-e XDG_RUNTIME_DIR \
@@ -64,6 +66,7 @@ start-linux:
 			-v $(WORKSPACE_DIR):/workspace \
 			-v $(HOME_VOLUME_NAME):/root \
 			-v /tmp/.X11-unix:/tmp/.X11-unix \
+			-v $(COMMON_DIR):/common \
 			-e DISPLAY=$(DISPLAY) \
 			-p 2222:22 \
 			--network host \
@@ -91,6 +94,7 @@ start-mac:
 			--name $(CONTAINER_NAME) \
 			-v $(WORKSPACE_DIR):/workspace \
 			-v $(HOME_VOLUME_NAME):/root \
+			-v $(COMMON_DIR):/common \
 			-e DISPLAY=$$(ipconfig getifaddr en0):0 \
 			-e LIBGL_ALWAYS_INDIRECT=1 \
 			-p 2222:22 \
