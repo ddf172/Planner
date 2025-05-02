@@ -16,10 +16,11 @@ file(GLOB_RECURSE HEADERS "include/*.h" "include/*.hpp")
 # Utwórz statyczną bibliotekę
 add_library(common STATIC ${SOURCES} ${HEADERS})
 
-# Dodaj katalogi include
+# Dodaj katalogi include (project headers + nlohmann)
 target_include_directories(common 
     PUBLIC 
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/extern/nlohmann
 )
 
 # Konfiguracja instalacji biblioteki
@@ -30,3 +31,13 @@ install(TARGETS common
 
 # Instalacja plików nagłówkowych
 install(DIRECTORY include/ DESTINATION include)
+
+# Kod ponizej na potrzeby testowe
+# Add executable for test
+add_executable(test_app src/test.cpp)
+
+# Link the 'common' library to the executable
+target_link_libraries(test_app PRIVATE common)
+
+# Optionally install it (if you use `make install`)
+install(TARGETS test_app DESTINATION bin)
