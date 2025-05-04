@@ -5,6 +5,7 @@ CONTAINER_NAME = cpp-server
 IMAGE_NAME = my-cpp-server
 HOME_VOLUME_NAME = cpp-server-home-volume
 WORKSPACE_DIR = $(subst \,/,$(CURDIR))/workspace
+COMMON_DIR = $(subst \,/,$(CURDIR))/../common
 
 # Default docker command
 DOCKER = docker
@@ -33,6 +34,7 @@ start:
 			--name $(CONTAINER_NAME) \
 			-v $(WORKSPACE_DIR):/workspace \
 			-v $(HOME_VOLUME_NAME):/root \
+			-v $(COMMON_DIR):/common \
 			-p 2223:22 \
 			-p 8080:8080 \
 			--network host \
