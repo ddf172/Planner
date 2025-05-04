@@ -1,9 +1,6 @@
 #pragma once
 
 class ISocket{
-protected:
-    int socket_fd; // File descriptor for the socket
-    
 public:
     virtual int getFd() const = 0;
 
