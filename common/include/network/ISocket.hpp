@@ -2,6 +2,18 @@
 
 class ISocket{
 public:
+    enum class MessageType {
+        Text,
+        Command,
+        Data
+    };
+    
+    struct Message {
+        MessageType type;
+        std::string content;
+        std::vector<uint8_t> binaryData;
+    };
+
     virtual int getFd() const = 0;
 
     /**
