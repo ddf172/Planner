@@ -100,3 +100,13 @@ Makefile
 Dockerfile
 !client/Dockerfile
 !server/Dockerfile
+
+# Do not ignore source/header files in server/ and client/
+!client/include/
+!client/include/**
+!client/src/
+!client/src/**
+!server/include/
+!server/include/**
+!server/src/
+!server/src/**
