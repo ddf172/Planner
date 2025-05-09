@@ -34,6 +34,13 @@ public:
     */
     virtual int recv(void* buffer, size_t length) = 0;
 
-    virtual void close() = 0;
+    virtual bool disconnect() = 0;
+    virtual bool isConnected() = 0;
+
     virtual ~ISocket() = default;
+
+
+    virtual void setOnConnectedCallback(std::function<void()> callback) = 0;
+    virtual void setOnDisconnectedCallback(std::function<void()> callback) = 0;
+    virtual void setOnMessageReceivedCallback(std::function<void(const Message&)> callback) = 0;
 }
