@@ -1,5 +1,9 @@
 #pragma once
 
+#include <vector>
+#include <functional>
+#include <string>
+
 class ISocket{
 public:
     enum class MessageType {
@@ -43,4 +47,4 @@ public:
     virtual void setOnConnectedCallback(std::function<void()> callback) = 0;
     virtual void setOnDisconnectedCallback(std::function<void()> callback) = 0;
     virtual void setOnMessageReceivedCallback(std::function<void(const Message&)> callback) = 0;
-}
+};
