@@ -102,6 +102,8 @@ Dockerfile
 !server/Dockerfile
 
 # Do not ignore source/header files in server/ and client/
+!server
+!client
 !server/workspace/include/
 !server/workspace/include/**
 !server/workspace/src/
