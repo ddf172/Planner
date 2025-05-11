@@ -18,25 +18,15 @@ public:
         std::vector<uint8_t> binaryData;
     };
 
-    virtual int getFd() const = 0;
+    virtual int getServerFd() const = 0;
+    virtual int getClientFd() const = 0;
 
     /**
-    * @brief Send data to the socket without serialization.
-    *
-    * @param buffer Pointer to the data to be sent.
-    * @param length Length of the data to be sent.
-    * @return Number of bytes sent, or -1 on error.
+    * @brief Sends Message over the socket.
+    * @param buffer Pointer to the Message to be sent.
+    * @return true if message was added to the buffer, false if socket is not connected.
     */
-    virtual int send(const void* buffer, size_t length) = 0;
-    
-    /**
-    * @brief Receive data from the socket without deserialization.
-    *
-    * @param buffer Pointer to the buffer where received data will be stored.
-    * @param length Maximum length of the buffer.
-    * @return Number of bytes received, or -1 on error.
-    */
-    virtual int recv(void* buffer, size_t length) = 0;
+    virtual bool sendMessage(const Message& message) = 0;
 
     virtual bool disconnect() = 0;
     virtual bool isConnected() = 0;
