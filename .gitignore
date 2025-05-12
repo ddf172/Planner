@@ -69,7 +69,6 @@ nbproject/
 **/.cache/
 
 # Binary output files
-client
 server
 test
 a.out
