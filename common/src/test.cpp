@@ -1,56 +1,37 @@
-#include "ScheduleData.hpp"
-#include <fstream>
 #include <iostream>
+#include <fstream>
+#include "ScheduleData.hpp"
+
+struct InputData {
+    std::vector<TimeBlock> timeblocks;
+    std::vector<Class> classes;
+    std::vector<Group> groups;
+    std::vector<Room> rooms;
+    std::vector<Teacher> teachers;
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(InputData, timeblocks, classes, groups, rooms, teachers)
+};
 
 int main() {
-    Schedule schedule;
-
-    // test data
-    Lesson lesson{
-        "L1", "CS", "1A", "T1", "R1",
-        TimeBlock{"Monday", 8, 9}
-    };
-    schedule.lessons.push_back(lesson);
-
-    Constraint c;
-    c.type = "NotAfterHour";
-    c.data = {
-        {"classGroupId", "1A"},
-        {"hour", 16}
-    };
-    schedule.constraints.push_back(c);
-
-    // ckeck if the JSON file was found
-    std::ifstream file("./data/schedule.json");
-    if (!file) {
-        std::cerr << "File not found!" << std::endl;
+    std::ifstream inFile("data/input_data.json");
+    if (!inFile) {
+        std::cerr << "Nie znaleziono pliku input_data.json" << std::endl;
         return 1;
-    } else {
-        std::cout << "File found!" << std::endl;
     }
 
-    try {
-        // serialize the schedule to JSON
-        json j = schedule;
-        std::cout << "Serialized JSON: " << j.dump(4) << std::endl;
+    json j;
+    inFile >> j;
 
-        // write the JSON to a file
-        std::ofstream outFile("./data/schedule.json");
-        if (outFile.is_open()) {
-            outFile << j.dump(4);
-            outFile.close();
-            std::cout << "JSON written to file." << std::endl;
-        } else {
-            std::cerr << "Error opening file for writing." << std::endl;
-        }
+    InputData input = j.get<InputData>();
 
-    } catch (const json::exception& e) {
-        std::cerr << "JSON error: " << e.what() << std::endl;
+    std::cout << "Wczytano " << input.classes.size() << " klas(y), "
+              << input.teachers.size() << " nauczyciel(i), "
+              << input.rooms.size() << " sal(e)." << std::endl;
+
+    // Przykład: wypisz wszystkie klasy
+    for (const auto& cls : input.classes) {
+        std::cout << "Klasa: " << cls.name << " (przedmiot: " << cls.subject << ")" << std::endl;
     }
-
-    // print the current directory using a system call to bash
-    std::system("pwd");
-
 
     return 0;
 }
