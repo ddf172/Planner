@@ -111,3 +111,12 @@ Dockerfile
 !client/workspace/include/**
 !client/workspace/src/
 !client/workspace/src/**
+
+# Ignore QT stuff
+
+/client/workspace/app/app_autogen
+/client/workspace/app/app_autogen/*
+/client/workspace/app/app
+/client/workspace/build-app-Desktop-Debug
+/client/workspace/build-app-Desktop-Debug/*
+/client/workspace/build-app-Desktop-Debug/**
