@@ -99,3 +99,11 @@ Makefile
 Dockerfile
 !client/Dockerfile
 !server/Dockerfile
+
+# Ignore QT stuff
+
+/client/workspace/app/app_autogen
+/client/workspace/app/app_autogen/*
+/client/workspace/app/app
+/client/workspace/build-app-Desktop-Debug
+/client/workspace/build-app-Desktop-Debug/*
