@@ -69,7 +69,6 @@ nbproject/
 **/.cache/
 
 # Binary output files
-client
 server
 test
 a.out
@@ -100,3 +99,24 @@ Makefile
 Dockerfile
 !client/Dockerfile
 !server/Dockerfile
+
+# Do not ignore source/header files in server/ and client/
+!server
+!client
+!server/workspace/include/
+!server/workspace/include/**
+!server/workspace/src/
+!server/workspace/src/**
+!client/workspace/include/
+!client/workspace/include/**
+!client/workspace/src/
+!client/workspace/src/**
+
+# Ignore QT stuff
+
+/client/workspace/app/app_autogen
+/client/workspace/app/app_autogen/*
+/client/workspace/app/app
+/client/workspace/build-app-Desktop-Debug
+/client/workspace/build-app-Desktop-Debug/*
+/client/workspace/build-app-Desktop-Debug/**

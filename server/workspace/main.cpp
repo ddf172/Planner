@@ -1,32 +1,60 @@
+#include "include/network/ServerSocket.hpp"
 #include <iostream>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include <cstring>
+#include <thread>
+#include <chrono>
+#include <signal.h>
 
+volatile sig_atomic_t running = 1;
 
-int main(){
+void signal_handler(int signal) {
+    running = 0;
+}
 
-    int serverSocket = socket(AF_INET, SOCK_STREAM, 0);
-
-    sockaddr_in serverAddress;
-    serverAddress.sin_family = AF_INET;
-    serverAddress.sin_port = htons(8080);
-    serverAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
-
-    bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress));
-
-    listen(serverSocket, 5);
-
-    int clientSocket = accept(serverSocket, nullptr, nullptr);
-
-    char buffer[1024] = {0};
-    recv(clientSocket, buffer, sizeof(buffer), 0);
-    std::cout << "Message: " << buffer << std::endl;
-
-    close(clientSocket);
-    close(serverSocket);
-
+int main() {
+    // Handling (Ctrl+C)
+    signal(SIGINT, signal_handler);
+    
+    try {
+        std::cout << "Starting server on port 8080..." << std::endl;
+        ServerSocket server(8080);
+        
+        server.setOnConnectedCallback([]() {
+            std::cout << "Client connected!" << std::endl;
+        });
+        
+        server.setOnDisconnectedCallback([]() {
+            std::cout << "Client disconnected!" << std::endl;
+        });
+        
+        server.setOnMessageReceivedCallback([&server](const ISocket::Message& message) {
+            std::cout << "Recieved: " << message.content << std::endl;
+            
+            // Resending the message back to the client
+            ISocket::Message response;
+            response.type = ISocket::MessageType::Text;
+            response.content = "Server recieved: " + message.content;
+            server.sendMessage(response);
+        });
+        
+        std::cout << "Waiting for client connection..." << std::endl;
+        
+        while (running) {
+            if (!server.isConnected()) {
+                server.accept();
+            }
+            
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        }
+        
+        std::cout << "Closing server..." << std::endl;
+        if (server.isConnected()) {
+            server.disconnect();
+        }
+        
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
+    }
+    
     return 0;
 }
