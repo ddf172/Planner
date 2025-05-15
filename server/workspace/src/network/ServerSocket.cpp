@@ -161,6 +161,7 @@ void ServerSocket::receiveMessages(){
         if (!running) break;
         
         if (bytesReceived < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
             continue; 
         }
         
@@ -211,7 +212,15 @@ void ServerSocket::sendMessages(){
 
             while (totalSent < toSend && running && connected) {
                 ssize_t bytesSent = send(clientSocket, data + totalSent, toSend - totalSent, 0);
-                if (bytesSent <= 0) {
+                if (bytesSent < 0) {
+                    if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                        continue;
+                    } else {
+                        disconnect();
+                        break;
+                    }
+                } else if (bytesSent == 0) {
                     disconnect();
                     break;
                 }
