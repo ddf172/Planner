@@ -6,15 +6,23 @@ ServerSocket::ServerSocket(int port){
         throw std::runtime_error("Failed to create socket");
     }
 
+    int opt = 1;
+    if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0) {
+        close(serverSocket);
+        throw std::runtime_error("Failed to set socket options");
+    }
+
     sockaddr_in serverAddress;
     serverAddress.sin_family = AF_INET;
-    serverAddress.sin_port = htons(8080);
+    serverAddress.sin_port = htons(port);
     serverAddress.sin_addr.s_addr = INADDR_ANY;
     if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) < 0) {
+        close(serverSocket);
         throw std::runtime_error("Failed to bind socket");
     }
 
     if (listen(serverSocket, 5) < 0) {
+        close(serverSocket);
         throw std::runtime_error("Failed to listen on socket");
     }
 
@@ -37,8 +45,11 @@ ServerSocket::~ServerSocket(){
     if (sendThread.joinable()) {
         sendThread.join();
     }
-    close(serverSocket);
-    serverSocket = -1;
+    
+    if (serverSocket >= 0) {
+        close(serverSocket);
+        serverSocket = -1;
+    }
 }
 
 int ServerSocket::getClientFd() const {
@@ -61,19 +72,36 @@ bool ServerSocket::sendMessage(const ISocket::Message& message){
 
 bool ServerSocket::accept(){
     if (connected) return false;
+    if (!running) return false;
+
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(serverSocket, &readfds);
+    
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 500000; // 500ms timeout
+    
+    int activity = select(serverSocket + 1, &readfds, NULL, NULL, &tv);
+    if (activity <= 0) {
+        return false; // Timeout or error
+    }
 
     clientSocket = ::accept(serverSocket, nullptr, nullptr);
     if (clientSocket < 0) {
         return false;
     }
 
-    // Set the socket to non-blocking mode
-    struct timeval tv;
-    tv.tv_sec = 0;
-    tv.tv_usec = 100000; // 100ms
-    setsockopt(clientSocket, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
+    //non-blocking
+    struct timeval recv_tv;
+    recv_tv.tv_sec = 0;
+    recv_tv.tv_usec = 100000; // 100ms
+    setsockopt(clientSocket, SOL_SOCKET, SO_RCVTIMEO, &recv_tv, sizeof(recv_tv));
 
     connected = true;
+    std::lock_guard<std::mutex> lock(connectionMutex);
+    connectionCondition.notify_all();
+
     if (onConnectedCallback) {
         onConnectedCallback();
     }
@@ -85,9 +113,12 @@ bool ServerSocket::disconnect(){
     if (!connected) return false;
     connected = false;
 
-    shutdown(clientSocket, SHUT_RDWR);
-    close(clientSocket);
-    clientSocket = -1;
+    if (clientSocket >= 0) {
+        shutdown(clientSocket, SHUT_RDWR);
+        close(clientSocket);
+        clientSocket = -1;
+    }
+
     if (onDisconnectedCallback) {
         onDisconnectedCallback();
     }
@@ -114,35 +145,41 @@ void ServerSocket::setOnMessageReceivedCallback(std::function<void(const ISocket
 
 void ServerSocket::receiveMessages(){
     while (running) {
+        if (!running) break;
+        
         if (!connected) {
             std::unique_lock<std::mutex> lock(connectionMutex);
-            connectionCondition.wait(lock, [this] { return connected || !running; });
-            continue;
-
+            connectionCondition.wait_for(lock, std::chrono::milliseconds(500),
+                [this] { return connected || !running; });
+            if (!running) break;
+            if (!connected) continue;
         }
 
         char buffer[1024] = {0};
         ssize_t bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
         
-        // Check for EAGAIN or EWOULDBLOCK errors (timeout errors)
+        if (!running) break;
+        
         if (bytesReceived < 0 && (errno == EAGAIN || errno == EWOULDBLOCK)) {
             continue; 
         }
         
-        // Check for other errors or connection closure from the client
         if (bytesReceived <= 0) {
             disconnect();
             continue;
         }
 
-        ISocket::Message message;
-        message.type = ISocket::MessageType::Text;
-        message.content = std::string(buffer, bytesReceived);
+        if (bytesReceived > 0) {
+            ISocket::Message message;
+            message.type = ISocket::MessageType::Text;
+            message.content = std::string(buffer, bytesReceived);
 
-        std::lock_guard<std::mutex> lock(receiveMutex);
-        receiveQueue.push(message);
-        if (onMessageReceivedCallback) {
-            onMessageReceivedCallback(message);
+            std::lock_guard<std::mutex> lock(receiveMutex);
+            receiveQueue.push(message);
+            if (onMessageReceivedCallback) {
+                onMessageReceivedCallback(message);
+            }
+            receiveCondition.notify_one();
         }
     }
 }
@@ -151,18 +188,19 @@ void ServerSocket::sendMessages(){
     while (running) {
         if (!connected) {
             std::unique_lock<std::mutex> lock(connectionMutex);
-            connectionCondition.wait(lock, [this] { return connected || !running; });
-            continue;
+            connectionCondition.wait_for(lock, std::chrono::milliseconds(500),
+                [this] { return connected || !running; });
+            if (!running) break;
+            if (!connected) continue;
         }
+        
         std::unique_lock<std::mutex> lock(sendMutex);
-        sendCondition.wait(lock, [this] { return !sendQueue.empty() || !running; });
+        sendCondition.wait_for(lock, std::chrono::milliseconds(500),
+            [this] { return !sendQueue.empty() || !running || !connected; });
 
-        if (!running) {
-            break;
-        }
-        if (!connected) {
-            continue;
-        }
+        if (!running) break;
+        if (!connected) continue;
+        
         while (!sendQueue.empty()) {
             ISocket::Message message = sendQueue.front();
             sendQueue.pop();
@@ -171,7 +209,7 @@ void ServerSocket::sendMessages(){
             size_t totalSent = 0;
             size_t toSend = message.content.size();
 
-            while (totalSent < toSend) {
+            while (totalSent < toSend && running && connected) {
                 ssize_t bytesSent = send(clientSocket, data + totalSent, toSend - totalSent, 0);
                 if (bytesSent <= 0) {
                     disconnect();
