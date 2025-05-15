@@ -17,6 +17,7 @@ set(COMMON_INCLUDE_DIR ${COMMON_DIR}/include)
 
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Core Network)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 
 set(PROJECT_SOURCES
@@ -24,6 +25,8 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        src/network/ClientSocket.cpp
+        include/network/ClientSocket.hpp
 )
 
 
@@ -66,6 +69,8 @@ endif()
 
 
 target_link_libraries(app PRIVATE
+        Qt${QT_VERSION_MAJOR}::Core
+        Qt${QT_VERSION_MAJOR}::Network
         Qt${QT_VERSION_MAJOR}::Widgets
         common
 )
