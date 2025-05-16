@@ -1,7 +1,12 @@
 // MessageFragmenter.cpp
 #include "MessageFragmenter.hpp"
 
-std::vector<MessageFrame> MessageFragmenter::fragment(const nlohmann::json& json, const std::string& messageId, int maxPayloadSize) {
+std::vector<MessageFrame> MessageFragmenter::fragment(
+    const nlohmann::json& json,
+    const std::string& messageId,
+    int maxPayloadSize,
+    MessageType type // Add MessageType parameter
+) {
     std::string serialized = json.dump();
     std::vector<MessageFrame> frames;
 
@@ -17,7 +22,8 @@ std::vector<MessageFrame> MessageFragmenter::fragment(const nlohmann::json& json
             .messageId = messageId,
             .sequenceNumber = sequence,
             .isLast = (offset + chunkSize >= totalSize),
-            .payloadSize = chunkSize
+            .payloadSize = chunkSize,
+            .type = type // Set the type
         };
 
         frames.push_back({header, chunk});

@@ -6,5 +6,10 @@
 
 class MessageFragmenter {
 public:
-    static std::vector<MessageFrame> fragment(const nlohmann::json& json, const std::string& messageId, int maxPayloadSize);
+    static std::vector<MessageFrame> fragment(
+        const nlohmann::json& json,
+        const std::string& messageId,
+        int maxPayloadSize,
+        MessageType type // Add MessageType parameter
+    );
 };

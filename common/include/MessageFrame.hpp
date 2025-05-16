@@ -6,18 +6,32 @@
 
 using json = nlohmann::json;
 
-struct MessageHeader {
-    std::string messageId;     // UUID albo losowy identyfikator wiadomości
-    int sequenceNumber;        // Numer fragmentu
-    bool isLast;               // Czy to ostatni fragment
-    int payloadSize;           // Rozmiar payloadu
+enum class MessageType {
+    Data,
+    Command,
+    Debug,
+    // Add more types as needed
+};
 
-    NLOHMANN_DEFINE_TYPE_INTRUSIVE(MessageHeader, messageId, sequenceNumber, isLast, payloadSize)
+NLOHMANN_JSON_SERIALIZE_ENUM(MessageType, {
+    {MessageType::Data, "Data"},
+    {MessageType::Command, "Command"},
+    {MessageType::Debug, "Debug"},
+})
+
+struct MessageHeader {
+    std::string messageId;     // UUID or random message identifier
+    int sequenceNumber;        // Fragment number
+    bool isLast;               // Is this the last fragment
+    int payloadSize;           // Payload size
+    MessageType type;          // Type of the message
+
+    NLOHMANN_DEFINE_TYPE_INTRUSIVE(MessageHeader, messageId, sequenceNumber, isLast, payloadSize, type)
 };
 
 struct MessageFrame {
     MessageHeader header;
-    std::string payload;       // Fragment zserializowanego JSON-a
+    std::string payload;       // Fragment of serialized JSON
 
     NLOHMANN_DEFINE_TYPE_INTRUSIVE(MessageFrame, header, payload)
 };

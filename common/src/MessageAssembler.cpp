@@ -11,10 +11,14 @@ bool MessageAssembler::addFrame(const MessageFrame& frame) {
     chunks[frame.header.sequenceNumber] = frame.payload;
 
     if (frame.header.isLast) {
+        expectedChunks = frame.header.sequenceNumber + 1;
+    }
+
+    if (expectedChunks != -1 && static_cast<int>(chunks.size()) == expectedChunks) {
         isComplete = true;
     }
 
-    return true;
+    return isComplete;
 }
 
 bool MessageAssembler::complete() const {
@@ -25,8 +29,10 @@ std::optional<nlohmann::json> MessageAssembler::assemble() const {
     if (!isComplete) return std::nullopt;
 
     std::string fullPayload;
-    for (const auto& [_, chunk] : chunks) {
-        fullPayload += chunk;
+    for (int i = 0; i < expectedChunks; ++i) {
+        auto it = chunks.find(i);
+        if (it == chunks.end()) return std::nullopt;
+        fullPayload += it->second;
     }
 
     try {
