@@ -1,0 +1,49 @@
+{
+    "timeblocks": [
+      { "id": "TB1", "day": "Monday", "start": 800, "end": 945, "duration": 105 },
+      { "id": "TB2", "day": "Monday", "start": 1000, "end": 1145, "duration": 105 }
+    ],
+    "classes": [
+      {
+        "id": "C1",
+        "name": "Informatyka podstawowa",
+        "subject": "CS",
+        "difficulty": 1,
+        "constraints": [
+          {
+            "type": "RequiredRoomFeature",
+            "data": { "feature": "computers" }
+          }
+        ]
+      }
+    ],
+    "groups": [
+      {
+        "id": "G1",
+        "name": "1A",
+        "parentGroupId": "",
+        "constraints": []
+      }
+    ],
+    "rooms": [
+      {
+        "id": "R1",
+        "name": "Sala komputerowa 101",
+        "features": ["computers", "projector"]
+      }
+    ],
+    "teachers": [
+      {
+        "id": "T1",
+        "name": "Anna Kowalska",
+        "subject": "CS",
+        "constraints": [
+          {
+            "type": "Unavailable",
+            "data": { "days": ["Friday"], "from": 1400, "to": 1600 }
+          }
+        ]
+      }
+    ]
+  }
+  
