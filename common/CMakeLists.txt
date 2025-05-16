@@ -31,13 +31,3 @@ install(TARGETS common
 
 # Instalacja plików nagłówkowych
 install(DIRECTORY include/ DESTINATION include)
-
-# Kod ponizej na potrzeby testowe
-# Add executable for test
-add_executable(test_app src/test.cpp)
-
-# Link the 'common' library to the executable
-target_link_libraries(test_app PRIVATE common)
-
-# Optionally install it (if you use `make install`)
-install(TARGETS test_app DESTINATION bin)
