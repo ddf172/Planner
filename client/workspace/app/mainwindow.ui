@@ -106,7 +106,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>6</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="groupsPage">
        <property name="minimumSize">
@@ -117,7 +117,7 @@
        </property>
        <layout class="QGridLayout" name="gridLayout_2" columnstretch="4,0,6">
         <item row="0" column="0">
-         <widget class="QWidget" name="widget_4" native="true">
+         <widget class="QWidget" name="widgetGroupForm" native="true">
           <property name="maximumSize">
            <size>
             <width>16777215</width>
@@ -126,7 +126,7 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <layout class="QFormLayout" name="formLayout">
+            <layout class="QFormLayout" name="formLayoutGroup">
              <item row="0" column="0">
               <widget class="QLabel" name="label_2">
                <property name="text">
@@ -135,7 +135,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="lineEdit"/>
+              <widget class="QLineEdit" name="lineEditGroupName"/>
              </item>
              <item row="1" column="0">
               <widget class="QLabel" name="label_8">
@@ -145,12 +145,12 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="lineEdit_2"/>
+              <widget class="QLineEdit" name="lineEditGroupId"/>
              </item>
             </layout>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton">
+            <widget class="QPushButton" name="pushButtonGroupSubmit">
              <property name="text">
               <string>Submit</string>
              </property>
@@ -170,20 +170,20 @@
          </widget>
         </item>
         <item row="0" column="2">
-         <widget class="QWidget" name="widget_3" native="true">
+         <widget class="QWidget" name="widgetGroupPreview" native="true">
           <property name="minimumSize">
            <size>
             <width>200</width>
             <height>0</height>
            </size>
           </property>
-          <widget class="QLabel" name="label_9">
+          <widget class="QLabel" name="labelGroupPrev">
            <property name="geometry">
             <rect>
-             <x>80</x>
-             <y>160</y>
-             <width>67</width>
-             <height>17</height>
+             <x>20</x>
+             <y>20</y>
+             <width>261</width>
+             <height>201</height>
             </rect>
            </property>
            <property name="text">
@@ -197,10 +197,10 @@
       <widget class="QWidget" name="teachersPage">
        <layout class="QGridLayout" name="gridLayout_3" columnstretch="4,0,0,6">
         <item row="0" column="0" colspan="2">
-         <widget class="QWidget" name="widget_6" native="true">
+         <widget class="QWidget" name="widgetTeacherForm" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_4">
            <item>
-            <layout class="QFormLayout" name="formLayout_3">
+            <layout class="QFormLayout" name="formLayoutTeacher">
              <item row="0" column="0">
               <widget class="QLabel" name="label_3">
                <property name="text">
@@ -216,13 +216,13 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="lineEdit_5"/>
+              <widget class="QLineEdit" name="lineEditTeacherId"/>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="lineEdit_6"/>
+              <widget class="QLineEdit" name="lineEditTeacherName"/>
              </item>
              <item row="2" column="1">
-              <widget class="QListWidget" name="listWidget_2">
+              <widget class="QListWidget" name="listWidgetTeacherSubjects">
                <property name="selectionMode">
                 <enum>QAbstractItemView::MultiSelection</enum>
                </property>
@@ -248,7 +248,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_3">
+            <widget class="QPushButton" name="pushButtonTeacherSubmit">
              <property name="text">
               <string>PushButton</string>
              </property>
@@ -265,17 +265,31 @@
          </widget>
         </item>
         <item row="0" column="3">
-         <widget class="QWidget" name="widget_7" native="true"/>
+         <widget class="QWidget" name="widgetTeacherPreview" native="true">
+          <widget class="QLabel" name="labelTeacherPrev">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>10</y>
+             <width>241</width>
+             <height>191</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </widget>
         </item>
        </layout>
       </widget>
       <widget class="QWidget" name="roomsPage">
        <layout class="QGridLayout" name="gridLayout" columnstretch="4,0,6">
         <item row="0" column="0">
-         <widget class="QWidget" name="widget_2" native="true">
+         <widget class="QWidget" name="widgetRoomForm" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <layout class="QFormLayout" name="formLayout_2">
+            <layout class="QFormLayout" name="formLayoutRoom">
              <item row="0" column="0">
               <widget class="QLabel" name="label">
                <property name="text">
@@ -298,17 +312,17 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="lineEdit_3">
+              <widget class="QLineEdit" name="lineEditRoomId">
                <property name="clearButtonEnabled">
                 <bool>false</bool>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="lineEdit_4"/>
+              <widget class="QLineEdit" name="lineEditRoomName"/>
              </item>
              <item row="2" column="1">
-              <widget class="QListWidget" name="listWidget">
+              <widget class="QListWidget" name="listWidgetRoomFeatures">
                <property name="selectionMode">
                 <enum>QAbstractItemView::MultiSelection</enum>
                </property>
@@ -330,7 +344,7 @@
             </layout>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_2">
+            <widget class="QPushButton" name="pushButtonRoomSubmit">
              <property name="text">
               <string>Submit</string>
              </property>
@@ -347,17 +361,31 @@
          </widget>
         </item>
         <item row="0" column="2">
-         <widget class="QWidget" name="widget_5" native="true"/>
+         <widget class="QWidget" name="widgetRoomPreview" native="true">
+          <widget class="QLabel" name="labelRoomPrev">
+           <property name="geometry">
+            <rect>
+             <x>20</x>
+             <y>20</y>
+             <width>231</width>
+             <height>221</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </widget>
         </item>
        </layout>
       </widget>
       <widget class="QWidget" name="subjectsPage">
        <layout class="QGridLayout" name="gridLayout_4" columnstretch="4,0,6">
         <item row="0" column="0">
-         <widget class="QWidget" name="widget_8" native="true">
+         <widget class="QWidget" name="widgetSubjectForm" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <item>
-            <layout class="QFormLayout" name="formLayout_4">
+            <layout class="QFormLayout" name="formLayoutSubject">
              <item row="0" column="0">
               <widget class="QLabel" name="label_7">
                <property name="text">
@@ -380,18 +408,18 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="lineEdit_7"/>
+              <widget class="QLineEdit" name="lineEditSubjectName"/>
              </item>
              <item row="1" column="1">
-              <widget class="QListWidget" name="listWidget_3"/>
+              <widget class="QListWidget" name="listWidgetSubjectConstraintRoom"/>
              </item>
              <item row="2" column="1">
-              <widget class="QListWidget" name="listWidget_4"/>
+              <widget class="QListWidget" name="listWidgetSubjectConstraintTeacher"/>
              </item>
             </layout>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_4">
+            <widget class="QPushButton" name="pushButtonSubjectSubmit">
              <property name="text">
               <string>PushButton</string>
              </property>
@@ -411,7 +439,21 @@
          </widget>
         </item>
         <item row="0" column="2">
-         <widget class="QWidget" name="widget_9" native="true"/>
+         <widget class="QWidget" name="widgetSubjectPreview" native="true">
+          <widget class="QLabel" name="labelSubjectPrev">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>10</y>
+             <width>261</width>
+             <height>271</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -448,10 +490,10 @@
       <widget class="QWidget" name="timeBlocksPage">
        <layout class="QGridLayout" name="gridLayout_5" columnstretch="4,0,6">
         <item row="0" column="0">
-         <widget class="QWidget" name="widget_10" native="true">
+         <widget class="QWidget" name="widgetTimeBlockForm" native="true">
           <layout class="QVBoxLayout" name="verticalLayout_6">
            <item>
-            <layout class="QFormLayout" name="formLayout_5">
+            <layout class="QFormLayout" name="formLayoutTimeBlock">
              <item row="0" column="0">
               <widget class="QLabel" name="label_6">
                <property name="text">
@@ -474,7 +516,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QListWidget" name="listWidget_5">
+              <widget class="QListWidget" name="listWidgetTimeBlockDay">
                <item>
                 <property name="text">
                  <string>Monday</string>
@@ -513,15 +555,15 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLineEdit" name="lineEdit_8"/>
+              <widget class="QLineEdit" name="lineEditTimeBlockStart"/>
              </item>
              <item row="2" column="1">
-              <widget class="QLineEdit" name="lineEdit_9"/>
+              <widget class="QLineEdit" name="lineEditTimeBlockEnd"/>
              </item>
             </layout>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_5">
+            <widget class="QPushButton" name="pushButtonTimeBlockSubmit">
              <property name="text">
               <string>Submit</string>
              </property>
@@ -541,7 +583,21 @@
          </widget>
         </item>
         <item row="0" column="2">
-         <widget class="QWidget" name="widget_11" native="true"/>
+         <widget class="QWidget" name="widgetTimeBlockPreview" native="true">
+          <widget class="QLabel" name="labelTimeBlockPrev">
+           <property name="geometry">
+            <rect>
+             <x>10</x>
+             <y>10</y>
+             <width>281</width>
+             <height>261</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </widget>
         </item>
        </layout>
       </widget>

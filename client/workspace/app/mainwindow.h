@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "ScheduleData.hpp"
+#include <vector>
+#include <string>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -14,6 +17,7 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
 
 private slots:
 
@@ -31,8 +35,22 @@ private slots:
 
     void on_btn_TimeBlocks_clicked();
 
+    void on_pushButtonGroupSubmit_clicked();
+    void on_pushButtonTeacherSubmit_clicked();
+    void on_pushButtonRoomSubmit_clicked();
+    void on_pushButtonTimeBlockSubmit_clicked();
+    void on_pushButtonSubjectSubmit_clicked();
+
 private:
     Ui::MainWindow *ui;
+    std::vector<TimeBlock> timeBlocks;
+    std::vector<Class> subjects;
+    std::vector<Room> rooms;
+    std::vector<Teacher> teachers;
+    std::vector<Group> groups;
+    std::vector<Constraint> constraints;
+
+
     void switchToPage(const QString &pageName);
 };
 
