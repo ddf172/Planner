@@ -94,6 +94,8 @@ temp/
 Makefile
 !client/Makefile
 !server/Makefile
+!client/workspace/app/Makefile
+!common/Makefile
 
 # Ignore Dockerfile generally, but not in client/ and server/
 Dockerfile
@@ -132,4 +134,3 @@ Dockerfile
 /client/workspace/build-app-Desktop-Debug
 /client/workspace/build-app-Desktop-Debug/*
 /client/workspace/build-app-Desktop-Debug/**
-!client/workspace/app/Makefile
