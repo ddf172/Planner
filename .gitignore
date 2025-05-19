@@ -132,3 +132,4 @@ Dockerfile
 /client/workspace/build-app-Desktop-Debug
 /client/workspace/build-app-Desktop-Debug/*
 /client/workspace/build-app-Desktop-Debug/**
+!client/workspace/app/Makefile
