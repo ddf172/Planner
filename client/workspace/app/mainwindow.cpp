@@ -7,6 +7,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    // Initialize the UI
+    initializeUI();
 }
 
 MainWindow::~MainWindow()
@@ -35,6 +37,95 @@ void MainWindow::on_btn_Subjects_clicked() { switchToPage("subjectsPage"); }
 void MainWindow::on_btn_TimeBlocks_clicked() { switchToPage("timeBlocksPage"); }
 
 
+void MainWindow::initializeUI()
+{
+    // Set the initial page to "groupsPage"
+    ui->stackedWidget->setCurrentIndex(0);
+
+    // Load the JSON data from the file
+    QString path = QCoreApplication::applicationDirPath() + "/data/input.json";
+    std::string filename = path.toStdString();
+    if (readFromJsonFile(filename)) {
+        qDebug() << "Data successfully loaded from" << path;
+    } else {
+        qWarning() << "Failed to load data from" << path;
+    }
+}
+
+
+bool MainWindow::writeToJsonFile(const std::string &filename) {
+    try {
+        // Create a JSON object to hold all data
+        json j;
+        j["groups"] = groups;
+        j["teachers"] = teachers;
+        j["rooms"] = rooms;
+        j["subjects"] = subjects;
+        j["timeBlocks"] = timeBlocks;
+
+        // Open file for writing
+        std::ofstream file(filename);
+        if (!file.is_open()) {
+            qWarning() << "Failed to open file:" << QString::fromStdString(filename);
+            return false;
+        }
+
+        // Write formatted JSON to file (with indentation)
+        file << j.dump(4);
+
+        file.close();
+        return true;
+    } catch (const std::exception& e) {
+        qWarning() << "Error writing to JSON file:" << e.what();
+        return false;
+    }
+}
+
+
+void MainWindow::on_pushButtonCheckoutSubmit_clicked()
+{
+    // Create /data directory in build folder if it doesn't exist
+    QDir dir(QCoreApplication::applicationDirPath() + "/data");
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
+    QString path = QCoreApplication::applicationDirPath() + "/data/input.json";
+    std::string filename = path.toStdString();
+    if (writeToJsonFile(filename)) {
+        qDebug() << "Data successfully written to" << path;
+    } else {
+        qWarning() << "Failed to write data to" << path;
+    }
+}
+
+
+bool MainWindow::readFromJsonFile(const std::string &filename) {
+    try {
+        // Open file for reading
+        std::ifstream file(filename);
+        if (!file.is_open()) {
+            qWarning() << "Failed to open file:" << QString::fromStdString(filename);
+            return false;
+        }
+        // Parse JSON data
+        json j;
+        file >> j;
+        file.close();
+        // Deserialize data into vectors
+        groups = j["groups"].get<std::vector<Group>>();
+        teachers = j["teachers"].get<std::vector<Teacher>>();
+        rooms = j["rooms"].get<std::vector<Room>>();
+        subjects = j["subjects"].get<std::vector<Class>>();
+        timeBlocks = j["timeBlocks"].get<std::vector<TimeBlock>>();
+        return true;
+    } catch (const std::exception& e) {
+        qWarning() << "Error reading from JSON file:" << e.what();
+        return false;
+    }
+}
+
+
 void MainWindow::on_pushButtonGroupSubmit_clicked()
 {
     // Read input from the form
@@ -61,7 +152,6 @@ void MainWindow::on_pushButtonGroupSubmit_clicked()
     ui->lineEditGroupId->clear();
 }
 
-// ...existing code...
 
 void MainWindow::on_pushButtonTimeBlockSubmit_clicked()
 {
