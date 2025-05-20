@@ -151,6 +151,50 @@ void MainWindow::on_pushButtonGroupSubmit_clicked()
     ui->lineEditGroupName->clear();
     ui->lineEditGroupId->clear();
 }
+void MainWindow::on_btn_labelGroupPrevEdit_clicked()
+{
+    QListWidgetItem *current = ui->labelGroupPrev->currentItem();
+    if (current) {
+        QString text = current->text();
+        QStringList lines = text.split('\n');
+
+        QString id = lines[0].split(": ")[1];
+        QString name = lines[1].split(": ")[1];
+
+        ui->lineEditGroupName->setText(name);
+        ui->lineEditGroupId->setText(id);
+
+        groups.erase(
+                std::remove_if(groups.begin(), groups.end(), [&id](const Group &group) {
+                    return QString::fromStdString(group.id) == id;
+                }),
+                groups.end()
+        );
+
+        int row = ui->labelGroupPrev->row(current);
+        delete ui->labelGroupPrev->takeItem(row);
+    }
+}
+
+void MainWindow::on_btn_labelGroupPrevDelete_clicked()
+{
+    QListWidgetItem *current = ui->labelGroupPrev->currentItem();
+    if (current) {
+        QString text = current->text();
+        QStringList lines = text.split('\n');
+
+        QString id = lines[0].split(": ")[1];
+        groups.erase(
+                std::remove_if(groups.begin(), groups.end(), [&id](const Group &group) {
+                    return QString::fromStdString(group.id) == id;
+                }),
+                groups.end()
+        );
+
+        int row = ui->labelGroupPrev->row(current);
+        delete ui->labelGroupPrev->takeItem(row);
+    }
+}
 
 
 void MainWindow::on_pushButtonTimeBlockSubmit_clicked()
