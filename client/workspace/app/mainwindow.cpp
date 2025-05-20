@@ -317,3 +317,4 @@ void MainWindow::on_pushButtonSubjectSubmit_clicked()
     ui->listWidgetSubjectConstraintRoom->clearSelection();
     ui->listWidgetSubjectConstraintTeacher->clearSelection();
 }
+
