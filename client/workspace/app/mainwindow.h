@@ -40,6 +40,9 @@ private slots:
     void on_pushButtonTimeBlockSubmit_clicked();
     void on_pushButtonSubjectSubmit_clicked();
     void on_pushButtonCheckoutSubmit_clicked();
+    void on_btn_labelGroupPrevEdit_clicked();
+
+    void on_btn_labelGroupPrevDelete_clicked();
 
 private:
     Ui::MainWindow *ui;

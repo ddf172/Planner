@@ -143,7 +143,7 @@ void MainWindow::on_pushButtonGroupSubmit_clicked()
     groups.push_back(newGroup);
 
     // Optionally, update the preview label
-    ui->labelGroupPrev->setText(
+    ui->labelGroupPrev->addItem(
         QString("ID: %1\nName: %2").arg(groupId, groupName)
     );
 
