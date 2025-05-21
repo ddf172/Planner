@@ -106,7 +106,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="groupsPage">
        <property name="minimumSize">
@@ -235,6 +235,21 @@
                <property name="sortingEnabled">
                 <bool>true</bool>
                </property>
+               <item>
+                <property name="text">
+                 <string>IT</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Math</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Polish</string>
+                </property>
+               </item>
               </widget>
              </item>
              <item row="2" column="0">
@@ -256,7 +271,30 @@
            <item>
             <widget class="QPushButton" name="pushButtonTeacherSubmit">
              <property name="text">
-              <string>PushButton</string>
+              <string>Submit</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QWidget" name="widgetTeacherPreview" native="true">
+          <layout class="QVBoxLayout" name="verticalLayout_9">
+           <item>
+            <widget class="QListWidget" name="labelTeacherPrev"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_labelTeacherPrevEdit">
+             <property name="text">
+              <string>Edit</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_labelTeacherPrevDelete">
+             <property name="text">
+              <string>Delete</string>
              </property>
             </widget>
            </item>
@@ -268,23 +306,6 @@
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-         </widget>
-        </item>
-        <item row="0" column="3">
-         <widget class="QWidget" name="widgetTeacherPreview" native="true">
-          <widget class="QLabel" name="labelTeacherPrev">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>10</y>
-             <width>241</width>
-             <height>191</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
          </widget>
         </item>
        </layout>

@@ -42,8 +42,9 @@ private slots:
     void on_pushButtonCheckoutSubmit_clicked();
 
     void on_btn_labelGroupPrevEdit_clicked();
-
     void on_btn_labelGroupPrevDelete_clicked();
+    void on_btn_labelTeacherPrevEdit_clicked();
+    void on_btn_labelTeacherPrevDelete_clicked();
 
 private:
     Ui::MainWindow *ui;
