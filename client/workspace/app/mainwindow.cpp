@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Initialize the UI
     initializeUI();
+
 }
 
 MainWindow::~MainWindow()
@@ -281,39 +282,83 @@ void MainWindow::on_pushButtonRoomSubmit_clicked()
 
 void MainWindow::on_pushButtonTeacherSubmit_clicked()
 {
-    // Read input from the form
     QString teacherId = ui->lineEditTeacherId->text();
     QString teacherName = ui->lineEditTeacherName->text();
 
-    // Get selected subjects (as a single string, or you can adapt to your model)
     QStringList selectedSubjects;
     for (QListWidgetItem* item : ui->listWidgetTeacherSubjects->selectedItems()) {
         selectedSubjects << item->text();
     }
     QString subject = selectedSubjects.join(", ");
 
-    // Create a new Teacher object
     Teacher newTeacher;
     newTeacher.id = teacherId.toStdString();
     newTeacher.name = teacherName.toStdString();
     newTeacher.subject = subject.toStdString();
     newTeacher.constraints = {}; // Not handled in this form
 
-    // Add to the teachers vector
     teachers.push_back(newTeacher);
 
-    // Optionally, update the preview label
-    ui->labelTeacherPrev->setText(
+    ui->labelTeacherPrev->addItem(
         QString("ID: %1\nName: %2\nSubjects: %3")
             .arg(teacherId)
             .arg(teacherName)
             .arg(subject)
     );
 
-    // Optionally, clear the form fields
     ui->lineEditTeacherId->clear();
     ui->lineEditTeacherName->clear();
     ui->listWidgetTeacherSubjects->clearSelection();
+}
+void MainWindow::on_btn_labelTeacherPrevEdit_clicked()
+{
+    QListWidgetItem* current = ui->labelTeacherPrev->currentItem();
+    if (current) {
+        QString text = current->text();
+        QStringList lines = text.split('\n');
+        QString id = lines[0].split(": ")[1];
+        QString name = lines[1].split(": ")[1];
+        QString subjects = lines[2].split(": ")[1];
+
+        ui->lineEditTeacherId->setText(id);
+        ui->lineEditTeacherName->setText(name);
+        QStringList subjectList = subjects.split(", ");
+        for (int i = 0; i < ui->listWidgetTeacherSubjects->count(); ++i) {
+            QListWidgetItem* item = ui->listWidgetTeacherSubjects->item(i);
+            if (subjectList.contains(item->text())) {
+                item->setSelected(true);
+            } else {
+                item->setSelected(false);
+            }
+        }
+
+        teachers.erase(
+                std::remove_if(teachers.begin(), teachers.end(), [&id](const Teacher &teacher) {
+                    return QString::fromStdString(teacher.id) == id;
+                }),
+                teachers.end()
+        );
+
+        delete ui->labelTeacherPrev->takeItem(ui->labelTeacherPrev->row(current));
+    }
+}
+
+void MainWindow::on_btn_labelTeacherPrevDelete_clicked()
+{
+    QListWidgetItem* current = ui->labelTeacherPrev->currentItem();
+    if (current) {
+        QString text = current->text();
+        QString id = text.split('\n')[0].split(": ")[1];
+
+        teachers.erase(
+                std::remove_if(teachers.begin(), teachers.end(), [&id](const Teacher& teacher) {
+                    return QString::fromStdString(teacher.id) == id;
+                }),
+                teachers.end()
+        );
+
+        delete ui->labelTeacherPrev->takeItem(ui->labelTeacherPrev->row(current));
+    }
 }
 
 void MainWindow::on_pushButtonSubjectSubmit_clicked()
