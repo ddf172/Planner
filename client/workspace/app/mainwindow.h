@@ -72,6 +72,8 @@ private:
 
     void initializeUI();
     void switchToPage(const QString &pageName);
+    void initializeSideMenu();
+    void onSideMenuPageChanged(int currentRow);
 
     bool writeToJsonFile(const std::string &filename);
     bool readFromJsonFile(const std::string &filename);

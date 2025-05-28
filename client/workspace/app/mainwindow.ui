@@ -6,679 +6,794 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>770</width>
-    <height>665</height>
+    <width>1197</width>
+    <height>835</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
+   <layout class="QHBoxLayout" name="horizontalLayoutMain">
     <item>
-     <widget class="QWidget" name="widget" native="true">
-      <property name="minimumSize">
+     <widget class="QListWidget" name="sideMenu">
+      <property name="maximumSize">
        <size>
-        <width>0</width>
-        <height>40</height>
+        <width>150</width>
+        <height>16777215</height>
        </size>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
-       <item>
-        <widget class="QPushButton" name="btn_Groups">
-         <property name="minimumSize">
-          <size>
-           <width>0</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="text">
-          <string>Groups</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btn_Subjects">
-         <property name="text">
-          <string>Subject</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btn_TimeBlocks">
-         <property name="text">
-          <string>Time Blocks</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btn_Teachers">
-         <property name="text">
-          <string>Teachers</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btn_Rooms">
-         <property name="text">
-          <string>Rooms</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btn_Constraints">
-         <property name="text">
-          <string>Constraints</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="btn_Checkout">
-         <property name="text">
-          <string>Checkout</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-    <item>
-     <widget class="QStackedWidget" name="stackedWidget">
-      <property name="minimumSize">
-       <size>
-        <width>80</width>
-        <height>0</height>
-       </size>
+      <property name="styleSheet">
+       <string>
+                                QListWidget {
+                                background-color: #2c3e50;
+                                color: #ecf0f1;
+                                border: none;
+                                }
+                                QListWidget::item {
+                                padding: 10px;
+                                border: none;
+                                }
+                                QListWidget::item:hover {
+                                background-color: #34495e;
+                                }
+                                QListWidget::item:selected {
+                                background-color: #1abc9c;
+                                color: #ffffff;
+                                }
+                            </string>
       </property>
-      <property name="currentIndex">
-       <number>2</number>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::SingleSelection</enum>
       </property>
-      <widget class="QWidget" name="groupsPage">
-       <property name="minimumSize">
-        <size>
-         <width>0</width>
-         <height>0</height>
-        </size>
-       </property>
-       <layout class="QGridLayout" name="gridLayout_2" columnstretch="4,0,6">
-        <item row="0" column="0">
-         <widget class="QWidget" name="widgetGroupForm" native="true">
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_2">
-           <item>
-            <layout class="QFormLayout" name="formLayoutGroup">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_2">
-               <property name="text">
-                <string>ID</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="lineEditGroupId"/>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_8">
-               <property name="text">
-                <string>Name</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="lineEditGroupName"/>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButtonGroupSubmit">
-             <property name="text">
-              <string>Submit</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="Line" name="line">
-          <property name="lineWidth">
-           <number>3</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QWidget" name="widgetGroupPreview" native="true">
-          <property name="minimumSize">
-           <size>
-            <width>200</width>
-            <height>0</height>
-           </size>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_7">
-           <item>
-            <widget class="QListWidget" name="labelGroupPrev"/>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btn_labelGroupPrevEdit">
-             <property name="text">
-              <string>Edit</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btn_labelGroupPrevDelete">
-             <property name="text">
-              <string>Delete</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="teachersPage">
-       <layout class="QGridLayout" name="gridLayout_3" columnstretch="4,0,0,6">
-        <item row="0" column="0" colspan="2">
-         <widget class="QWidget" name="widgetTeacherForm" native="true">
-          <layout class="QVBoxLayout" name="verticalLayout_4">
-           <item>
-            <layout class="QFormLayout" name="formLayoutTeacher">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_3">
-               <property name="text">
-                <string>Id</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_12">
-               <property name="text">
-                <string>Name</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="lineEditTeacherId"/>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="lineEditTeacherName"/>
-             </item>
-             <item row="2" column="1">
-              <widget class="QListWidget" name="listWidgetTeacherSubjects">
-               <property name="selectionMode">
-                <enum>QAbstractItemView::MultiSelection</enum>
-               </property>
-               <property name="sortingEnabled">
-                <bool>true</bool>
-               </property>
-               <item>
-                <property name="text">
-                 <string>IT</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Math</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Polish</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_13">
-               <property name="text">
-                <string>Subjects</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <widget class="Line" name="line_4">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButtonTeacherSubmit">
-             <property name="text">
-              <string>Submit</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="0" column="3">
-         <widget class="QWidget" name="widgetTeacherPreview" native="true">
-          <layout class="QVBoxLayout" name="verticalLayout_9">
-           <item>
-            <widget class="QListWidget" name="labelTeacherPrev"/>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btn_labelTeacherPrevEdit">
-             <property name="text">
-              <string>Edit</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btn_labelTeacherPrevDelete">
-             <property name="text">
-              <string>Delete</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="Line" name="line_3">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="roomsPage">
-       <layout class="QGridLayout" name="gridLayoutRoomsPage">
-        <item row="0" column="0">
-         <widget class="QWidget" name="widgetRoomForm" native="true">
-          <layout class="QVBoxLayout" name="verticalLayoutRoomForm">
-           <item>
-            <layout class="QFormLayout" name="formLayoutRoom">
-             <item row="0" column="0">
-              <widget class="QLabel" name="labelRoomId">
-               <property name="text">
-                <string>Room ID</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="lineEditRoomId"/>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="labelRoomName">
-               <property name="text">
-                <string>Room Name</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="lineEditRoomName"/>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="labelRoomFeatures">
-               <property name="text">
-                <string>Room Features</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QListWidget" name="listWidgetRoomFeatures">
-               <item>
-                <property name="text">
-                 <string>Projector</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Whiteboard</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Computer</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButtonRoomSubmit">
-             <property name="text">
-              <string>Submit</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="Line" name="lineRoomSeparator">
-          <property name="lineWidth">
-           <number>3</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QWidget" name="widgetRoomPreview" native="true">
-          <layout class="QVBoxLayout" name="verticalLayoutRoomPreview">
-           <item>
-            <widget class="QListWidget" name="labelRoomPrev"/>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btn_labelRoomPrevEdit">
-             <property name="text">
-              <string>Edit</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btn_labelRoomPrevDelete">
-             <property name="text">
-              <string>Delete</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="subjectsPage">
-       <layout class="QGridLayout" name="gridLayout_4" columnstretch="4,0,6">
-        <item row="0" column="0">
-         <widget class="QWidget" name="widgetSubjectForm" native="true">
-          <layout class="QVBoxLayout" name="verticalLayout_5">
-           <item>
-            <layout class="QFormLayout" name="formLayoutSubject">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_7">
-               <property name="text">
-                <string>Name</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_14">
-               <property name="text">
-                <string>Room features</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_15">
-               <property name="text">
-                <string>Teacher subject</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLineEdit" name="lineEditSubjectName"/>
-             </item>
-             <item row="1" column="1">
-              <widget class="QListWidget" name="listWidgetSubjectConstraintRoom">
-               <item>
-                <property name="text">
-                 <string>computer</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item row="2" column="1">
-              <widget class="QListWidget" name="listWidgetSubjectConstraintTeacher">
-               <item>
-                <property name="text">
-                 <string>math</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>english</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButtonSubjectSubmit">
-             <property name="text">
-              <string>Submit</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="Line" name="line_5">
-          <property name="lineWidth">
-           <number>3</number>
-          </property>
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QWidget" name="widgetSubjectPreview" native="true">
-          <layout class="QVBoxLayout" name="verticalLayoutSubjectPreview">
-           <item>
-            <widget class="QListWidget" name="labelSubjectPrev"/>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btn_labelSubjectPrevEdit">
-             <property name="text">
-              <string>Edit</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="btn_labelSubjectPrevDelete">
-             <property name="text">
-              <string>Delete</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="constraintsPage">
-       <widget class="QLabel" name="label_4">
-        <property name="geometry">
-         <rect>
-          <x>310</x>
-          <y>60</y>
-          <width>151</width>
-          <height>17</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>constaints</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="checkoutPage">
-       <widget class="QLabel" name="label_5">
-        <property name="geometry">
-         <rect>
-          <x>310</x>
-          <y>110</y>
-          <width>67</width>
-          <height>17</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>checkout</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButtonCheckoutSubmit">
-        <property name="geometry">
-         <rect>
-          <x>70</x>
-          <y>490</y>
-          <width>151</width>
-          <height>31</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Submit Data</string>
-        </property>
-       </widget>
-      </widget>
-      <widget class="QWidget" name="timeBlocksPage">
- <layout class="QGridLayout" name="gridLayoutTimeBlocksPage">
-  <!-- Form Section -->
-  <item row="0" column="0">
-   <widget class="QWidget" name="widgetTimeBlockForm" native="true">
-    <layout class="QVBoxLayout" name="verticalLayoutTimeBlockForm">
-     <item>
-      <layout class="QFormLayout" name="formLayoutTimeBlock">
-       <item row="0" column="0">
-        <widget class="QLabel" name="labelTimeBlockDay">
-         <property name="text">
-          <string>Day</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="QListWidget" name="listWidgetTimeBlockDay">
-         <item>
-          <property name="text">
-           <string>Monday</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Tuesday</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Wednesday</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Thursday</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Friday</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Saturday</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Sunday</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="labelTimeBlockStart">
-         <property name="text">
-          <string>Start Hour</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="lineEditTimeBlockStart"/>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="labelTimeBlockEnd">
-         <property name="text">
-          <string>End Hour</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QLineEdit" name="lineEditTimeBlockEnd"/>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <widget class="QPushButton" name="pushButtonTimeBlockSubmit">
-       <property name="text">
-        <string>Submit</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </item>
-
-  <!-- Vertical Line Separator -->
-  <item row="0" column="1">
-   <widget class="Line" name="lineTimeBlockSeparator">
-    <property name="lineWidth">
-     <number>3</number>
-    </property>
-    <property name="orientation">
-     <enum>Qt::Vertical</enum>
-    </property>
-   </widget>
-  </item>
-
-  <!-- Preview Section -->
-  <item row="0" column="2">
-   <widget class="QWidget" name="widgetTimeBlockPreview" native="true">
-    <layout class="QVBoxLayout" name="verticalLayoutTimeBlockPreview">
-     <item>
-      <widget class="QListWidget" name="labelTimeBlockPrev"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_labelTimeBlockPrevEdit">
+      <item>
        <property name="text">
         <string>Edit</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_labelTimeBlockPrevDelete">
+      </item>
+      <item>
        <property name="text">
-        <string>Delete</string>
+        <string>Final Plan</string>
        </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Login</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Settings</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item>
+     <widget class="QStackedWidget" name="stackedWidgetMain">
+      <widget class="QWidget" name="editPage">
+       <layout class="QVBoxLayout" name="verticalLayoutEditPage">
+        <item>
+         <widget class="QStackedWidget" name="stackedWidgetEdit">
+          <widget class="QWidget" name="editPage">
+           <layout class="QVBoxLayout" name="verticalLayoutEditPage">
+            <item>
+             <widget class="QWidget" name="buttonPanel" native="true">
+              <layout class="QHBoxLayout" name="horizontalLayoutButtons">
+               <item>
+                <widget class="QPushButton" name="btn_Groups">
+                 <property name="text">
+                  <string>Groups</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="btn_Subjects">
+                 <property name="text">
+                  <string>Subjects</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="btn_TimeBlocks">
+                 <property name="text">
+                  <string>Time Blocks</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="btn_Teachers">
+                 <property name="text">
+                  <string>Teachers</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="btn_Rooms">
+                 <property name="text">
+                  <string>Rooms</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="btn_Constraints">
+                 <property name="text">
+                  <string>Constraints</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="btn_Checkout">
+                 <property name="text">
+                  <string>Checkout</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QStackedWidget" name="stackedWidgetEditPages">
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>0</height>
+               </size>
+              </property>
+              <widget class="QWidget" name="groupsPage">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_2" columnstretch="4,0,6">
+                <item row="0" column="0">
+                 <widget class="QWidget" name="widgetGroupForm" native="true">
+                  <property name="maximumSize">
+                   <size>
+                    <width>16777215</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_2">
+                   <item>
+                    <layout class="QFormLayout" name="formLayoutGroup">
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_2">
+                       <property name="text">
+                        <string>ID</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QLineEdit" name="lineEditGroupId"/>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="label_8">
+                       <property name="text">
+                        <string>Name</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="1">
+                      <widget class="QLineEdit" name="lineEditGroupName"/>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="pushButtonGroupSubmit">
+                     <property name="text">
+                      <string>Submit</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="Line" name="line">
+                  <property name="lineWidth">
+                   <number>3</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QWidget" name="widgetGroupPreview" native="true">
+                  <property name="minimumSize">
+                   <size>
+                    <width>200</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <layout class="QVBoxLayout" name="verticalLayout_7">
+                   <item>
+                    <widget class="QListWidget" name="labelGroupPrev"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="btn_labelGroupPrevEdit">
+                     <property name="text">
+                      <string>Edit</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="btn_labelGroupPrevDelete">
+                     <property name="text">
+                      <string>Delete</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="teachersPage">
+               <layout class="QGridLayout" name="gridLayout_3" columnstretch="4,0,0,6">
+                <item row="0" column="0">
+                 <widget class="QWidget" name="widgetTeacherForm" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayout_4">
+                   <item>
+                    <layout class="QFormLayout" name="formLayoutTeacher">
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_3">
+                       <property name="text">
+                        <string>Id</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="label_12">
+                       <property name="text">
+                        <string>Name</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QLineEdit" name="lineEditTeacherId"/>
+                     </item>
+                     <item row="1" column="1">
+                      <widget class="QLineEdit" name="lineEditTeacherName"/>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QListWidget" name="listWidgetTeacherSubjects">
+                       <property name="selectionMode">
+                        <enum>QAbstractItemView::NoSelection</enum>
+                       </property>
+                       <property name="sortingEnabled">
+                        <bool>true</bool>
+                       </property>
+                       <item>
+                        <property name="text">
+                         <string>IT</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Math</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Polish</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_13">
+                       <property name="text">
+                        <string>Subjects</string>
+                       </property>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <widget class="Line" name="line_4">
+                     <property name="orientation">
+                      <enum>Qt::Vertical</enum>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="pushButtonTeacherSubmit">
+                     <property name="text">
+                      <string>Submit</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="0" column="3">
+                 <widget class="QWidget" name="widgetTeacherPreview" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayout_9">
+                   <item>
+                    <widget class="QListWidget" name="labelTeacherPrev"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="btn_labelTeacherPrevEdit">
+                     <property name="text">
+                      <string>Edit</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="btn_labelTeacherPrevDelete">
+                     <property name="text">
+                      <string>Delete</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="Line" name="line_3">
+                  <property name="lineWidth">
+                   <number>4</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="roomsPage">
+               <layout class="QGridLayout" name="gridLayoutRoomsPage" columnstretch="4,0,6">
+                <item row="0" column="0">
+                 <widget class="QWidget" name="widgetRoomForm" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayoutRoomForm">
+                   <item>
+                    <layout class="QFormLayout" name="formLayoutRoom">
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="labelRoomId">
+                       <property name="text">
+                        <string>Room ID</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QLineEdit" name="lineEditRoomId"/>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="labelRoomName">
+                       <property name="text">
+                        <string>Room Name</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="1">
+                      <widget class="QLineEdit" name="lineEditRoomName"/>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="labelRoomFeatures">
+                       <property name="text">
+                        <string>Room Features</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QListWidget" name="listWidgetRoomFeatures">
+                       <item>
+                        <property name="text">
+                         <string>Projector</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Whiteboard</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Computer</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="pushButtonRoomSubmit">
+                     <property name="text">
+                      <string>Submit</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="Line" name="lineRoomSeparator">
+                  <property name="lineWidth">
+                   <number>3</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QWidget" name="widgetRoomPreview" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayoutRoomPreview">
+                   <item>
+                    <widget class="QListWidget" name="labelRoomPrev"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="btn_labelRoomPrevEdit">
+                     <property name="text">
+                      <string>Edit</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="btn_labelRoomPrevDelete">
+                     <property name="text">
+                      <string>Delete</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="subjectsPage">
+               <layout class="QGridLayout" name="gridLayout_4" columnstretch="4,0,6">
+                <item row="0" column="0">
+                 <widget class="QWidget" name="widgetSubjectForm" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayout_5">
+                   <item>
+                    <layout class="QFormLayout" name="formLayoutSubject">
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="label_7">
+                       <property name="text">
+                        <string>Name</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="label_14">
+                       <property name="text">
+                        <string>Room features </string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="label_15">
+                       <property name="text">
+                        <string>Teacher subject </string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QLineEdit" name="lineEditSubjectName"/>
+                     </item>
+                     <item row="1" column="1">
+                      <widget class="QListWidget" name="listWidgetSubjectConstraintRoom">
+                       <item>
+                        <property name="text">
+                         <string>computer </string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QListWidget" name="listWidgetSubjectConstraintTeacher">
+                       <item>
+                        <property name="text">
+                         <string>math </string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>english </string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="pushButtonSubjectSubmit">
+                     <property name="text">
+                      <string>Submit</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="Line" name="line_5">
+                  <property name="lineWidth">
+                   <number>3</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QWidget" name="widgetSubjectPreview" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayoutSubjectPreview">
+                   <item>
+                    <widget class="QListWidget" name="labelSubjectPrev"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="btn_labelSubjectPrevEdit">
+                     <property name="text">
+                      <string>Edit</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="btn_labelSubjectPrevDelete">
+                     <property name="text">
+                      <string>Delete</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+              <widget class="QWidget" name="constraintsPage">
+               <widget class="QLabel" name="label_4">
+                <property name="geometry">
+                 <rect>
+                  <x>310</x>
+                  <y>60</y>
+                  <width>151</width>
+                  <height>17</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>constaints</string>
+                </property>
+               </widget>
+              </widget>
+              <widget class="QWidget" name="checkoutPage">
+               <widget class="QLabel" name="label_5">
+                <property name="geometry">
+                 <rect>
+                  <x>310</x>
+                  <y>110</y>
+                  <width>67</width>
+                  <height>17</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>checkout</string>
+                </property>
+               </widget>
+               <widget class="QPushButton" name="pushButtonCheckoutSubmit">
+                <property name="geometry">
+                 <rect>
+                  <x>70</x>
+                  <y>490</y>
+                  <width>151</width>
+                  <height>31</height>
+                 </rect>
+                </property>
+                <property name="text">
+                 <string>Submit Data</string>
+                </property>
+               </widget>
+              </widget>
+              <widget class="QWidget" name="timeBlocksPage">
+               <layout class="QGridLayout" name="gridLayoutTimeBlocksPage" columnstretch="4,0,6">
+                <item row="0" column="0">
+                 <widget class="QWidget" name="widgetTimeBlockForm" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayoutTimeBlockForm">
+                   <item>
+                    <layout class="QFormLayout" name="formLayoutTimeBlock">
+                     <item row="0" column="0">
+                      <widget class="QLabel" name="labelTimeBlockDay">
+                       <property name="text">
+                        <string>Day</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="0" column="1">
+                      <widget class="QListWidget" name="listWidgetTimeBlockDay">
+                       <item>
+                        <property name="text">
+                         <string>Monday</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Tuesday</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Wednesday</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Thursday</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Friday</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Saturday</string>
+                        </property>
+                       </item>
+                       <item>
+                        <property name="text">
+                         <string>Sunday</string>
+                        </property>
+                       </item>
+                      </widget>
+                     </item>
+                     <item row="1" column="0">
+                      <widget class="QLabel" name="labelTimeBlockStart">
+                       <property name="text">
+                        <string>Start Hour</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="1" column="1">
+                      <widget class="QLineEdit" name="lineEditTimeBlockStart"/>
+                     </item>
+                     <item row="2" column="0">
+                      <widget class="QLabel" name="labelTimeBlockEnd">
+                       <property name="text">
+                        <string>End Hour</string>
+                       </property>
+                      </widget>
+                     </item>
+                     <item row="2" column="1">
+                      <widget class="QLineEdit" name="lineEditTimeBlockEnd"/>
+                     </item>
+                    </layout>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="pushButtonTimeBlockSubmit">
+                     <property name="text">
+                      <string>Submit</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="Line" name="lineTimeBlockSeparator">
+                  <property name="lineWidth">
+                   <number>3</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QWidget" name="widgetTimeBlockPreview" native="true">
+                  <layout class="QVBoxLayout" name="verticalLayoutTimeBlockPreview">
+                   <item>
+                    <widget class="QListWidget" name="labelTimeBlockPrev"/>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="btn_labelTimeBlockPrevEdit">
+                     <property name="text">
+                      <string>Edit</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="btn_labelTimeBlockPrevDelete">
+                     <property name="text">
+                      <string>Delete</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
       </widget>
-     </item>
-    </layout>
-   </widget>
-  </item>
- </layout>
-</widget>
+      <widget class="QWidget" name="finalPlanPage">
+       <layout class="QVBoxLayout" name="verticalLayoutFinalPlan">
+        <item>
+         <widget class="QLabel" name="labelFinalPlan">
+          <property name="text">
+           <string>Final Plan View</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="loginPage">
+       <layout class="QVBoxLayout" name="verticalLayoutLogin">
+        <item>
+         <widget class="QLabel" name="labelLogin">
+          <property name="text">
+           <string>Login Page</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEditUsername">
+          <property name="placeholderText">
+           <string>Username</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="lineEditPassword">
+          <property name="echoMode">
+           <enum>QLineEdit::Password</enum>
+          </property>
+          <property name="placeholderText">
+           <string>Password</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonLogin">
+          <property name="text">
+           <string>Login</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="settingsPage">
+       <layout class="QVBoxLayout" name="verticalLayoutSettings">
+        <item>
+         <widget class="QLabel" name="labelSettings">
+          <property name="text">
+           <string>Settings Page</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBoxOption1">
+          <property name="text">
+           <string>Option 1</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBoxOption2">
+          <property name="text">
+           <string>Option 2</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushButtonSaveSettings">
+          <property name="text">
+           <string>Save Settings</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
