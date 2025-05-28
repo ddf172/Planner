@@ -9,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Initialize the UI
     initializeUI();
+    initializeSideMenu();
 
 }
 
@@ -18,10 +19,12 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::switchToPage(const QString &pageName) {
-    for (int i = 0; i < ui->stackedWidget->count(); ++i) {
-        QWidget *page = ui->stackedWidget->widget(i);
+    for (int i = 0; i < ui->stackedWidgetEditPages->count(); ++i) {
+        QWidget *page = ui->stackedWidgetEditPages->widget(i);
+        //print name to consol
+        qDebug() << "Checking page:" << pageName;
         if (page->objectName() == pageName) {
-            ui->stackedWidget->setCurrentIndex(i);
+            ui->stackedWidgetEditPages->setCurrentIndex(i);
             return;
         }
     }
@@ -41,7 +44,7 @@ void MainWindow::on_btn_TimeBlocks_clicked() { switchToPage("timeBlocksPage"); }
 void MainWindow::initializeUI()
 {
     // Set the initial page to "groupsPage"
-    ui->stackedWidget->setCurrentIndex(0);
+    ui->stackedWidgetEdit->setCurrentIndex(0);
 
     // Load the JSON data from the file
     QString path = QCoreApplication::applicationDirPath() + "/data/input.json";
@@ -50,6 +53,25 @@ void MainWindow::initializeUI()
         qDebug() << "Data successfully loaded from" << path;
     } else {
         qWarning() << "Failed to load data from" << path;
+    }
+}
+void MainWindow::initializeSideMenu()
+{
+    // Connect the side menu's signal to the slot
+    connect(ui->sideMenu, &QListWidget::currentRowChanged, this, &MainWindow::onSideMenuPageChanged);
+
+    // Set the initial page
+    ui->sideMenu->setCurrentRow(0); // Select the first item
+    ui->stackedWidgetMain->setCurrentIndex(0); // Show the first page
+}
+
+void MainWindow::onSideMenuPageChanged(int currentRow)
+{
+    // Change the current page of the stacked widget
+    if (currentRow >= 0 && currentRow < ui->stackedWidgetMain->count()) {
+        ui->stackedWidgetMain->setCurrentIndex(currentRow);
+    } else {
+        qWarning() << "Invalid row selected in side menu:" << currentRow;
     }
 }
 
