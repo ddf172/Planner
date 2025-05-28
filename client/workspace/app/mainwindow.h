@@ -34,19 +34,28 @@ private slots:
     void on_btn_Subjects_clicked();
     void on_btn_TimeBlocks_clicked();
 
-    void on_pushButtonGroupSubmit_clicked();
-    void on_pushButtonTeacherSubmit_clicked();
-    void on_pushButtonRoomSubmit_clicked();
     void on_pushButtonTimeBlockSubmit_clicked();
-    void on_pushButtonSubjectSubmit_clicked();
     void on_pushButtonCheckoutSubmit_clicked();
 
+    //groups page
+    void on_pushButtonGroupSubmit_clicked();
     void on_btn_labelGroupPrevEdit_clicked();
     void on_btn_labelGroupPrevDelete_clicked();
+
+    //teachers page
+    void on_pushButtonTeacherSubmit_clicked();
     void on_btn_labelTeacherPrevEdit_clicked();
     void on_btn_labelTeacherPrevDelete_clicked();
+
+    //subjects page
+    void on_pushButtonSubjectSubmit_clicked();
     void on_btn_labelSubjectPrevEdit_clicked();
     void on_btn_labelSubjectPrevDelete_clicked();
+
+    //rooms page
+    void on_pushButtonRoomSubmit_clicked();
+    void on_btn_labelRoomPrevEdit_clicked();
+    void on_btn_labelRoomPrevDelete_clicked();
 
 private:
     Ui::MainWindow *ui;

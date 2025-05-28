@@ -106,7 +106,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="groupsPage">
        <property name="minimumSize">
@@ -311,59 +311,54 @@
        </layout>
       </widget>
       <widget class="QWidget" name="roomsPage">
-       <layout class="QGridLayout" name="gridLayout" columnstretch="4,0,6">
+       <layout class="QGridLayout" name="gridLayoutRoomsPage">
         <item row="0" column="0">
          <widget class="QWidget" name="widgetRoomForm" native="true">
-          <layout class="QVBoxLayout" name="verticalLayout_3">
+          <layout class="QVBoxLayout" name="verticalLayoutRoomForm">
            <item>
             <layout class="QFormLayout" name="formLayoutRoom">
              <item row="0" column="0">
-              <widget class="QLabel" name="label">
+              <widget class="QLabel" name="labelRoomId">
                <property name="text">
-                <string>ID</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_10">
-               <property name="text">
-                <string>Name</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_11">
-               <property name="text">
-                <string>Features</string>
+                <string>Room ID</string>
                </property>
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLineEdit" name="lineEditRoomId">
-               <property name="clearButtonEnabled">
-                <bool>false</bool>
+              <widget class="QLineEdit" name="lineEditRoomId"/>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="labelRoomName">
+               <property name="text">
+                <string>Room Name</string>
                </property>
               </widget>
              </item>
              <item row="1" column="1">
               <widget class="QLineEdit" name="lineEditRoomName"/>
              </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="labelRoomFeatures">
+               <property name="text">
+                <string>Room Features</string>
+               </property>
+              </widget>
+             </item>
              <item row="2" column="1">
               <widget class="QListWidget" name="listWidgetRoomFeatures">
-               <property name="selectionMode">
-                <enum>QAbstractItemView::MultiSelection</enum>
-               </property>
-               <property name="sortingEnabled">
-                <bool>true</bool>
-               </property>
                <item>
                 <property name="text">
-                 <string>computer</string>
+                 <string>Projector</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>projector</string>
+                 <string>Whiteboard</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Computer</string>
                 </property>
                </item>
               </widget>
@@ -381,7 +376,10 @@
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="Line" name="line_2">
+         <widget class="Line" name="lineRoomSeparator">
+          <property name="lineWidth">
+           <number>3</number>
+          </property>
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
@@ -389,19 +387,25 @@
         </item>
         <item row="0" column="2">
          <widget class="QWidget" name="widgetRoomPreview" native="true">
-          <widget class="QLabel" name="labelRoomPrev">
-           <property name="geometry">
-            <rect>
-             <x>20</x>
-             <y>20</y>
-             <width>231</width>
-             <height>221</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
+          <layout class="QVBoxLayout" name="verticalLayoutRoomPreview">
+           <item>
+            <widget class="QListWidget" name="labelRoomPrev"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_labelRoomPrevEdit">
+             <property name="text">
+              <string>Edit</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_labelRoomPrevDelete">
+             <property name="text">
+              <string>Delete</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>
