@@ -34,7 +34,6 @@ private slots:
     void on_btn_Subjects_clicked();
     void on_btn_TimeBlocks_clicked();
 
-    void on_pushButtonTimeBlockSubmit_clicked();
     void on_pushButtonCheckoutSubmit_clicked();
 
     //groups page
@@ -56,6 +55,11 @@ private slots:
     void on_pushButtonRoomSubmit_clicked();
     void on_btn_labelRoomPrevEdit_clicked();
     void on_btn_labelRoomPrevDelete_clicked();
+
+    //timeBlocks page
+    void on_pushButtonTimeBlockSubmit_clicked();
+    void on_btn_labelTimeBlockPrevEdit_clicked();
+    void on_btn_labelTimeBlockPrevDelete_clicked();
 
 private:
     Ui::MainWindow *ui;

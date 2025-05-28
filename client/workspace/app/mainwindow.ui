@@ -555,119 +555,130 @@
        </widget>
       </widget>
       <widget class="QWidget" name="timeBlocksPage">
-       <layout class="QGridLayout" name="gridLayout_5" columnstretch="4,0,6">
-        <item row="0" column="0">
-         <widget class="QWidget" name="widgetTimeBlockForm" native="true">
-          <layout class="QVBoxLayout" name="verticalLayout_6">
-           <item>
-            <layout class="QFormLayout" name="formLayoutTimeBlock">
-             <item row="0" column="0">
-              <widget class="QLabel" name="label_6">
-               <property name="text">
-                <string>Day</string>
-               </property>
-              </widget>
-             </item>
-             <item row="1" column="0">
-              <widget class="QLabel" name="label_16">
-               <property name="text">
-                <string>Start hour</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="label_17">
-               <property name="text">
-                <string>End hour</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QListWidget" name="listWidgetTimeBlockDay">
-               <item>
-                <property name="text">
-                 <string>Monday</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Tuesday</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Wednesday</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Thursday</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Friday</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Saturday</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
-                 <string>Sunday</string>
-                </property>
-               </item>
-              </widget>
-             </item>
-             <item row="1" column="1">
-              <widget class="QLineEdit" name="lineEditTimeBlockStart"/>
-             </item>
-             <item row="2" column="1">
-              <widget class="QLineEdit" name="lineEditTimeBlockEnd"/>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <widget class="QPushButton" name="pushButtonTimeBlockSubmit">
-             <property name="text">
-              <string>Submit</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="Line" name="line_6">
-          <property name="lineWidth">
-           <number>3</number>
+ <layout class="QGridLayout" name="gridLayoutTimeBlocksPage">
+  <!-- Form Section -->
+  <item row="0" column="0">
+   <widget class="QWidget" name="widgetTimeBlockForm" native="true">
+    <layout class="QVBoxLayout" name="verticalLayoutTimeBlockForm">
+     <item>
+      <layout class="QFormLayout" name="formLayoutTimeBlock">
+       <item row="0" column="0">
+        <widget class="QLabel" name="labelTimeBlockDay">
+         <property name="text">
+          <string>Day</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QListWidget" name="listWidgetTimeBlockDay">
+         <item>
+          <property name="text">
+           <string>Monday</string>
           </property>
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
+         </item>
+         <item>
+          <property name="text">
+           <string>Tuesday</string>
           </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QWidget" name="widgetTimeBlockPreview" native="true">
-          <widget class="QLabel" name="labelTimeBlockPrev">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>10</y>
-             <width>281</width>
-             <height>261</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </widget>
-        </item>
-       </layout>
+         </item>
+         <item>
+          <property name="text">
+           <string>Wednesday</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Thursday</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Friday</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Saturday</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Sunday</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="labelTimeBlockStart">
+         <property name="text">
+          <string>Start Hour</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="lineEditTimeBlockStart"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="labelTimeBlockEnd">
+         <property name="text">
+          <string>End Hour</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="lineEditTimeBlockEnd"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonTimeBlockSubmit">
+       <property name="text">
+        <string>Submit</string>
+       </property>
       </widget>
+     </item>
+    </layout>
+   </widget>
+  </item>
+
+  <!-- Vertical Line Separator -->
+  <item row="0" column="1">
+   <widget class="Line" name="lineTimeBlockSeparator">
+    <property name="lineWidth">
+     <number>3</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Vertical</enum>
+    </property>
+   </widget>
+  </item>
+
+  <!-- Preview Section -->
+  <item row="0" column="2">
+   <widget class="QWidget" name="widgetTimeBlockPreview" native="true">
+    <layout class="QVBoxLayout" name="verticalLayoutTimeBlockPreview">
+     <item>
+      <widget class="QListWidget" name="labelTimeBlockPrev"/>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_labelTimeBlockPrevEdit">
+       <property name="text">
+        <string>Edit</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btn_labelTimeBlockPrevDelete">
+       <property name="text">
+        <string>Delete</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </item>
+ </layout>
+</widget>
      </widget>
     </item>
    </layout>
