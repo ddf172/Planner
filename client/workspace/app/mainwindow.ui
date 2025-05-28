@@ -106,7 +106,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="groupsPage">
        <property name="minimumSize">
@@ -438,17 +438,34 @@
               <widget class="QLineEdit" name="lineEditSubjectName"/>
              </item>
              <item row="1" column="1">
-              <widget class="QListWidget" name="listWidgetSubjectConstraintRoom"/>
+              <widget class="QListWidget" name="listWidgetSubjectConstraintRoom">
+               <item>
+                <property name="text">
+                 <string>computer</string>
+                </property>
+               </item>
+              </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QListWidget" name="listWidgetSubjectConstraintTeacher"/>
+              <widget class="QListWidget" name="listWidgetSubjectConstraintTeacher">
+               <item>
+                <property name="text">
+                 <string>math</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>english</string>
+                </property>
+               </item>
+              </widget>
              </item>
             </layout>
            </item>
            <item>
             <widget class="QPushButton" name="pushButtonSubjectSubmit">
              <property name="text">
-              <string>PushButton</string>
+              <string>Submit</string>
              </property>
             </widget>
            </item>
@@ -467,19 +484,25 @@
         </item>
         <item row="0" column="2">
          <widget class="QWidget" name="widgetSubjectPreview" native="true">
-          <widget class="QLabel" name="labelSubjectPrev">
-           <property name="geometry">
-            <rect>
-             <x>10</x>
-             <y>10</y>
-             <width>261</width>
-             <height>271</height>
-            </rect>
-           </property>
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
+          <layout class="QVBoxLayout" name="verticalLayoutSubjectPreview">
+           <item>
+            <widget class="QListWidget" name="labelSubjectPrev"/>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_labelSubjectPrevEdit">
+             <property name="text">
+              <string>Edit</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="btn_labelSubjectPrevDelete">
+             <property name="text">
+              <string>Delete</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </widget>
         </item>
        </layout>

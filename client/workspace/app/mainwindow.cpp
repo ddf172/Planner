@@ -342,7 +342,6 @@ void MainWindow::on_btn_labelTeacherPrevEdit_clicked()
         delete ui->labelTeacherPrev->takeItem(ui->labelTeacherPrev->row(current));
     }
 }
-
 void MainWindow::on_btn_labelTeacherPrevDelete_clicked()
 {
     QListWidgetItem* current = ui->labelTeacherPrev->currentItem();
@@ -393,7 +392,7 @@ void MainWindow::on_pushButtonSubjectSubmit_clicked()
     subjects.push_back(newClass);
 
     // Optionally, update the preview label
-    ui->labelSubjectPrev->setText(
+    ui->labelSubjectPrev->addItem(
         QString("ID: %1\nName: %2\nRoom features: %3\nTeacher subjects: %4")
             .arg(id)
             .arg(subjectName)
@@ -405,5 +404,62 @@ void MainWindow::on_pushButtonSubjectSubmit_clicked()
     ui->lineEditSubjectName->clear();
     ui->listWidgetSubjectConstraintRoom->clearSelection();
     ui->listWidgetSubjectConstraintTeacher->clearSelection();
+}
+void MainWindow::on_btn_labelSubjectPrevEdit_clicked()
+{
+    QListWidgetItem* current = ui->labelSubjectPrev->currentItem();
+    if (current) {
+        QString text = current->text();
+        QStringList lines = text.split('\n');
+
+        QString id = lines[0].split(": ")[1];
+        QString name = lines[1].split(": ")[1];
+        QString roomFeatures = lines[2].split(": ")[1];
+        QString teacherSubjects = lines[3].split(": ")[1];
+
+        ui->lineEditSubjectName->setText(name);
+
+        QStringList roomFeaturesList = roomFeatures.split(", ");
+        for (int i = 0; i < ui->listWidgetSubjectConstraintRoom->count(); ++i) {
+            QListWidgetItem* item = ui->listWidgetSubjectConstraintRoom->item(i);
+            item->setSelected(roomFeaturesList.contains(item->text()));
+        }
+
+        QStringList teacherSubjectsList = teacherSubjects.split(", ");
+        for (int i = 0; i < ui->listWidgetSubjectConstraintTeacher->count(); ++i) {
+            QListWidgetItem* item = ui->listWidgetSubjectConstraintTeacher->item(i);
+            item->setSelected(teacherSubjectsList.contains(item->text()));
+        }
+
+        subjects.erase(
+            std::remove_if(subjects.begin(), subjects.end(), [&id](const Class& subject) {
+                return QString::fromStdString(subject.id) == id;
+            }),
+            subjects.end()
+        );
+
+        int row = ui->labelSubjectPrev->row(current);
+        delete ui->labelSubjectPrev->takeItem(row);
+    }
+}
+
+void MainWindow::on_btn_labelSubjectPrevDelete_clicked()
+{
+    QListWidgetItem* current = ui->labelSubjectPrev->currentItem();
+    if (current) {
+        QString text = current->text();
+        QStringList lines = text.split('\n');
+
+        QString id = lines[0].split(": ")[1];
+
+        subjects.erase(
+            std::remove_if(subjects.begin(), subjects.end(), [&id](const Class& subject) {
+                return QString::fromStdString(subject.id) == id;
+            }),
+            subjects.end()
+        );
+
+        delete ui->labelSubjectPrev->takeItem(ui->labelSubjectPrev->row(current));
+    }
 }
 
