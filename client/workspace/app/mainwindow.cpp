@@ -243,41 +243,83 @@ void MainWindow::on_pushButtonTimeBlockSubmit_clicked()
 
 void MainWindow::on_pushButtonRoomSubmit_clicked()
 {
-    // Read input from the form
     QString roomId = ui->lineEditRoomId->text();
     QString roomName = ui->lineEditRoomName->text();
 
-    // Get selected features
     std::set<std::string> features;
     for (QListWidgetItem* item : ui->listWidgetRoomFeatures->selectedItems()) {
         features.insert(item->text().toStdString());
     }
 
-    // Create a new Room object
     Room newRoom;
     newRoom.id = roomId.toStdString();
     newRoom.name = roomName.toStdString();
     newRoom.features = features;
 
-    // Add to the rooms vector
     rooms.push_back(newRoom);
 
-    // Optionally, update the preview label
     QString featuresStr;
     for (const auto& f : features) {
         featuresStr += QString::fromStdString(f) + " ";
     }
-    ui->labelRoomPrev->setText(
+    ui->labelRoomPrev->addItem(
         QString("ID: %1\nName: %2\nFeatures: %3")
             .arg(roomId)
             .arg(roomName)
             .arg(featuresStr.trimmed())
     );
 
-    // Optionally, clear the form fields
     ui->lineEditRoomId->clear();
     ui->lineEditRoomName->clear();
     ui->listWidgetRoomFeatures->clearSelection();
+}
+void MainWindow::on_btn_labelRoomPrevEdit_clicked()
+{
+    QListWidgetItem* current = ui->labelRoomPrev->currentItem();
+    if (current) {
+        QString text = current->text();
+        QStringList lines = text.split('\n');
+
+        QString id = lines[0].split(": ")[1];
+        QString name = lines[1].split(": ")[1];
+        QString features = lines[2].split(": ")[1];
+
+        ui->lineEditRoomId->setText(id);
+        ui->lineEditRoomName->setText(name);
+
+        QStringList featureList = features.split(" ");
+        for (int i = 0; i < ui->listWidgetRoomFeatures->count(); ++i) {
+            QListWidgetItem* item = ui->listWidgetRoomFeatures->item(i);
+            item->setSelected(featureList.contains(item->text()));
+        }
+
+        rooms.erase(
+            std::remove_if(rooms.begin(), rooms.end(), [&id](const Room& room) {
+                return QString::fromStdString(room.id) == id;
+            }),
+            rooms.end()
+        );
+
+        int row = ui->labelRoomPrev->row(current);
+        delete ui->labelRoomPrev->takeItem(row);
+    }
+}
+void MainWindow::on_btn_labelRoomPrevDelete_clicked()
+{
+    QListWidgetItem* current = ui->labelRoomPrev->currentItem();
+    if (current) {
+        QString text = current->text();
+        QString id = text.split('\n')[0].split(": ")[1];
+
+        rooms.erase(
+            std::remove_if(rooms.begin(), rooms.end(), [&id](const Room& room) {
+                return QString::fromStdString(room.id) == id;
+            }),
+            rooms.end()
+        );
+
+        delete ui->labelRoomPrev->takeItem(ui->labelRoomPrev->row(current));
+    }
 }
 
 void MainWindow::on_pushButtonTeacherSubmit_clicked()
@@ -442,7 +484,6 @@ void MainWindow::on_btn_labelSubjectPrevEdit_clicked()
         delete ui->labelSubjectPrev->takeItem(row);
     }
 }
-
 void MainWindow::on_btn_labelSubjectPrevDelete_clicked()
 {
     QListWidgetItem* current = ui->labelSubjectPrev->currentItem();
