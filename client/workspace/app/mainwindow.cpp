@@ -176,7 +176,6 @@ void MainWindow::on_btn_labelGroupPrevEdit_clicked()
         delete ui->labelGroupPrev->takeItem(row);
     }
 }
-
 void MainWindow::on_btn_labelGroupPrevDelete_clicked()
 {
     QListWidgetItem *current = ui->labelGroupPrev->currentItem();
@@ -195,50 +194,6 @@ void MainWindow::on_btn_labelGroupPrevDelete_clicked()
         int row = ui->labelGroupPrev->row(current);
         delete ui->labelGroupPrev->takeItem(row);
     }
-}
-
-
-void MainWindow::on_pushButtonTimeBlockSubmit_clicked()
-{
-    // Read input from the form
-    QList<QListWidgetItem*> selectedDays = ui->listWidgetTimeBlockDay->selectedItems();
-    QString day = selectedDays.isEmpty() ? "" : selectedDays.first()->text();
-    QString startStr = ui->lineEditTimeBlockStart->text();
-    QString endStr = ui->lineEditTimeBlockEnd->text();
-
-    // Generate a simple ID (could be improved)
-    QString id = QString("%1_%2_%3").arg(day, startStr, endStr);
-
-    // Parse start and end times as integers
-    int start = startStr.toInt();
-    int end = endStr.toInt();
-    int duration = end - start;
-
-    // Create a new TimeBlock object
-    TimeBlock newTimeBlock;
-    newTimeBlock.id = id.toStdString();
-    newTimeBlock.day = day.toStdString();
-    newTimeBlock.start = start;
-    newTimeBlock.end = end;
-    newTimeBlock.duration = duration;
-
-    // Add to the timeBlocks vector
-    timeBlocks.push_back(newTimeBlock);
-
-    // Optionally, update the preview label
-    ui->labelTimeBlockPrev->setText(
-        QString("ID: %1\nDay: %2\nStart: %3\nEnd: %4\nDuration: %5")
-            .arg(id)
-            .arg(day)
-            .arg(start)
-            .arg(end)
-            .arg(duration)
-    );
-
-    // Optionally, clear the form fields
-    ui->listWidgetTimeBlockDay->clearSelection();
-    ui->lineEditTimeBlockStart->clear();
-    ui->lineEditTimeBlockEnd->clear();
 }
 
 void MainWindow::on_pushButtonRoomSubmit_clicked()
@@ -504,3 +459,98 @@ void MainWindow::on_btn_labelSubjectPrevDelete_clicked()
     }
 }
 
+void MainWindow::on_pushButtonTimeBlockSubmit_clicked()
+{
+    // Read input from the form
+    QList<QListWidgetItem*> selectedDays = ui->listWidgetTimeBlockDay->selectedItems();
+    QString day = selectedDays.isEmpty() ? "" : selectedDays.first()->text();
+    QString startStr = ui->lineEditTimeBlockStart->text();
+    QString endStr = ui->lineEditTimeBlockEnd->text();
+
+    // Generate a simple ID
+    QString id = QString("%1_%2_%3").arg(day, startStr, endStr);
+
+    // Parse start and end times as integers
+    int start = startStr.toInt();
+    int end = endStr.toInt();
+    int duration = end - start;
+
+    // Create a new TimeBlock object
+    TimeBlock newTimeBlock;
+    newTimeBlock.id = id.toStdString();
+    newTimeBlock.day = day.toStdString();
+    newTimeBlock.start = start;
+    newTimeBlock.end = end;
+    newTimeBlock.duration = duration;
+
+    // Add to the timeBlocks vector
+    timeBlocks.push_back(newTimeBlock);
+
+    // Update the preview list
+    ui->labelTimeBlockPrev->addItem(
+        QString("ID: %1\nDay: %2\nStart: %3\nEnd: %4\nDuration: %5")
+            .arg(id)
+            .arg(day)
+            .arg(start)
+            .arg(end)
+            .arg(duration)
+    );
+
+    // Clear the form fields
+    ui->listWidgetTimeBlockDay->clearSelection();
+    ui->lineEditTimeBlockStart->clear();
+    ui->lineEditTimeBlockEnd->clear();
+}
+void MainWindow::on_btn_labelTimeBlockPrevEdit_clicked()
+{
+    QListWidgetItem* current = ui->labelTimeBlockPrev->currentItem();
+    if (current) {
+        QString text = current->text();
+        QStringList lines = text.split('\n');
+
+        QString id = lines[0].split(": ")[1];
+        QString day = lines[1].split(": ")[1];
+        QString startStr = lines[2].split(": ")[1];
+        QString endStr = lines[3].split(": ")[1];
+
+        // Populate the form fields
+        ui->lineEditTimeBlockStart->setText(startStr);
+        ui->lineEditTimeBlockEnd->setText(endStr);
+
+        for (int i = 0; i < ui->listWidgetTimeBlockDay->count(); ++i) {
+            QListWidgetItem* item = ui->listWidgetTimeBlockDay->item(i);
+            item->setSelected(item->text() == day);
+        }
+
+        // Remove the time block from the vector
+        timeBlocks.erase(
+            std::remove_if(timeBlocks.begin(), timeBlocks.end(), [&id](const TimeBlock& timeBlock) {
+                return QString::fromStdString(timeBlock.id) == id;
+            }),
+            timeBlocks.end()
+        );
+
+        // Remove the item from the QListWidget
+        int row = ui->labelTimeBlockPrev->row(current);
+        delete ui->labelTimeBlockPrev->takeItem(row);
+    }
+}
+void MainWindow::on_btn_labelTimeBlockPrevDelete_clicked()
+{
+    QListWidgetItem* current = ui->labelTimeBlockPrev->currentItem();
+    if (current) {
+        QString text = current->text();
+        QString id = text.split('\n')[0].split(": ")[1];
+
+        // Remove the time block from the vector
+        timeBlocks.erase(
+            std::remove_if(timeBlocks.begin(), timeBlocks.end(), [&id](const TimeBlock& timeBlock) {
+                return QString::fromStdString(timeBlock.id) == id;
+            }),
+            timeBlocks.end()
+        );
+
+        // Remove the item from the QListWidget
+        delete ui->labelTimeBlockPrev->takeItem(ui->labelTimeBlockPrev->row(current));
+    }
+}
