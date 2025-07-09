@@ -1,6 +1,6 @@
 #pragma once
 
-#include "/common/include/network/ISocket.hpp"
+#include "message/MessageFrame.hpp"
 #include <string>
 #include <thread>
 #include <mutex>
@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <cstring>
 
-class ServerSocket : public ISocket {
+class ServerSocket {
 private:
     int serverSocket;
     int clientSocket;
@@ -28,19 +28,17 @@ private:
 
     std::atomic<bool> running;
 
-    
     std::mutex sendMutex;
     std::condition_variable sendCondition;
-    std::queue<ISocket::Message> sendQueue;
+    std::queue<MessageFrame> sendQueue;
     
-    std::queue<ISocket::Message> receiveQueue;
+    std::queue<MessageFrame> receiveQueue;
     std::mutex receiveMutex;
     std::condition_variable receiveCondition;
 
-
     std::function<void()> onConnectedCallback;
     std::function<void()> onDisconnectedCallback;
-    std::function<void(const ISocket::Message&)> onMessageReceivedCallback;
+    std::function<void(const MessageFrame&)> onMessageReceivedCallback;
 
     void receiveMessages();
     void sendMessages();
@@ -49,10 +47,10 @@ public:
     ServerSocket(int port);
     ~ServerSocket();
 
-    int getServerFd() const override;
-    int getClientFd() const override;
+    int getServerFd() const;
+    int getClientFd() const;
 
-    bool sendMessage(const ISocket::Message& message) override;
+    bool sendMessage(const MessageFrame& message);
 
     /**
     * @brief Accepts a new client connection.
@@ -63,10 +61,10 @@ public:
     * @brief Disconnects the current client.
     * @return true if the disconnection was successful, false if no client is connected.
     */
-    bool disconnect() override;
-    bool isConnected() override;
+    bool disconnect();
+    bool isConnected();
 
-    void setOnConnectedCallback(std::function<void()> callback) override;
-    void setOnDisconnectedCallback(std::function<void()> callback) override;
-    void setOnMessageReceivedCallback(std::function<void(const ISocket::Message&)> callback) override;
+    void setOnConnectedCallback(std::function<void()> callback);
+    void setOnDisconnectedCallback(std::function<void()> callback);
+    void setOnMessageReceivedCallback(std::function<void(const MessageFrame&)> callback);
 };

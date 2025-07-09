@@ -1,4 +1,4 @@
-#include "/workspace/include/network/ServerSocket.hpp"
+#include "network/ServerSocket.hpp"
 
 ServerSocket::ServerSocket(int port){
     serverSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -60,7 +60,7 @@ int ServerSocket::getServerFd() const {
     return serverSocket;
 }
 
-bool ServerSocket::sendMessage(const ISocket::Message& message){
+bool ServerSocket::sendMessage(const MessageFrame& message){
     if (!connected) {
         return false;
     }
@@ -139,7 +139,7 @@ void ServerSocket::setOnDisconnectedCallback(std::function<void()> callback){
     onDisconnectedCallback = callback;
 }
 
-void ServerSocket::setOnMessageReceivedCallback(std::function<void(const ISocket::Message&)> callback){
+void ServerSocket::setOnMessageReceivedCallback(std::function<void(const MessageFrame&)> callback){
     onMessageReceivedCallback = callback;
 }
 
@@ -155,7 +155,7 @@ void ServerSocket::receiveMessages(){
             if (!connected) continue;
         }
 
-        char buffer[1024] = {0};
+        char buffer[4096] = {0};
         ssize_t bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
         
         if (!running) break;
@@ -171,16 +171,20 @@ void ServerSocket::receiveMessages(){
         }
 
         if (bytesReceived > 0) {
-            ISocket::Message message;
-            message.type = ISocket::MessageType::Text;
-            message.content = std::string(buffer, bytesReceived);
+            try {
+                std::string jsonStr(buffer, bytesReceived);
+                json j = json::parse(jsonStr);
+                MessageFrame message = j.get<MessageFrame>();
 
-            std::lock_guard<std::mutex> lock(receiveMutex);
-            receiveQueue.push(message);
-            if (onMessageReceivedCallback) {
-                onMessageReceivedCallback(message);
+                std::lock_guard<std::mutex> lock(receiveMutex);
+                receiveQueue.push(message);
+                if (onMessageReceivedCallback) {
+                    onMessageReceivedCallback(message);
+                }
+                receiveCondition.notify_one();
+            } catch (const std::exception& e) {
+                std::cerr << "Error parsing received message: " << e.what() << std::endl;
             }
-            receiveCondition.notify_one();
         }
     }
 }
@@ -203,28 +207,35 @@ void ServerSocket::sendMessages(){
         if (!connected) continue;
         
         while (!sendQueue.empty()) {
-            ISocket::Message message = sendQueue.front();
+            MessageFrame message = sendQueue.front();
             sendQueue.pop();
 
-            const char* data = message.content.c_str();
-            size_t totalSent = 0;
-            size_t toSend = message.content.size();
+            try {
+                json j = message;
+                std::string jsonStr = j.dump();
+                
+                const char* data = jsonStr.c_str();
+                size_t totalSent = 0;
+                size_t toSend = jsonStr.size();
 
-            while (totalSent < toSend && running && connected) {
-                ssize_t bytesSent = send(clientSocket, data + totalSent, toSend - totalSent, 0);
-                if (bytesSent < 0) {
-                    if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                        continue;
-                    } else {
+                while (totalSent < toSend && running && connected) {
+                    ssize_t bytesSent = send(clientSocket, data + totalSent, toSend - totalSent, 0);
+                    if (bytesSent < 0) {
+                        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                            continue;
+                        } else {
+                            disconnect();
+                            break;
+                        }
+                    } else if (bytesSent == 0) {
                         disconnect();
                         break;
                     }
-                } else if (bytesSent == 0) {
-                    disconnect();
-                    break;
+                    totalSent += bytesSent;
                 }
-                totalSent += bytesSent;
+            } catch (const std::exception& e) {
+                std::cerr << "Error serializing message: " << e.what() << std::endl;
             }
         }
     }
