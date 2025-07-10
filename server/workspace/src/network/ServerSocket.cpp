@@ -34,17 +34,39 @@ ServerSocket::ServerSocket(int port){
 }
 
 ServerSocket::~ServerSocket(){
-    if (isConnected()) disconnect();
+    std::cout << "ServerSocket: destructor called" << std::endl;
 
+    if (isConnected()) {
+        std::cout << "ServerSocket: disconnecting client in destructor" << std::endl;
+        disconnect();
+    }
+
+    std::cout << "ServerSocket: stopping threads" << std::endl;
     running = false;
+    
     connectionCondition.notify_all();
+    sendCondition.notify_all();
+    receiveCondition.notify_all();
 
     if (receiveThread.joinable()) {
-        receiveThread.join();
+        try {
+            std::cout << "ServerSocket: joining receiveThread" << std::endl;
+            receiveThread.join();
+        } catch (const std::exception& e) {
+            std::cerr << "Error joining receiveThread: " << e.what() << std::endl;
+        }
     }
+    
     if (sendThread.joinable()) {
-        sendThread.join();
+        try {
+            std::cout << "ServerSocket: joining sendThread" << std::endl;
+            sendThread.join();
+        } catch (const std::exception& e) {
+            std::cerr << "Error joining sendThread: " << e.what() << std::endl;
+        }
     }
+    
+    std::cout << "ServerSocket: threads stopped" << std::endl;
     
     if (serverSocket >= 0) {
         close(serverSocket);
@@ -109,21 +131,33 @@ bool ServerSocket::accept(){
 }
 
 bool ServerSocket::disconnect(){
-    std::lock_guard<std::mutex> lock(connectionMutex);
-    if (!connected) return false;
-    connected = false;
+    {
+        std::lock_guard<std::mutex> lock(connectionMutex);
+        if (!connected) return false;
+        connected = false;
 
-    if (clientSocket >= 0) {
-        shutdown(clientSocket, SHUT_RDWR);
-        close(clientSocket);
-        clientSocket = -1;
+        if (clientSocket >= 0) {
+            std::cout << "ServerSocket: disconnecting client (fd=" << clientSocket << ")" << std::endl;
+            try {
+                shutdown(clientSocket, SHUT_RDWR);
+                close(clientSocket);
+                clientSocket = -1;
+            } catch (const std::exception& e) {
+                std::cerr << "Error during socket shutdown: " << e.what() << std::endl;
+            }
+        }
+
+        connectionCondition.notify_all();
     }
 
     if (onDisconnectedCallback) {
-        onDisconnectedCallback();
+        try {
+            onDisconnectedCallback();
+        } catch (const std::exception& e) {
+            std::cerr << "Exception in disconnect callback: " << e.what() << std::endl;
+        }
     }
 
-    connectionCondition.notify_all();
     return true;
 }
 
@@ -131,16 +165,24 @@ bool ServerSocket::isConnected() const {
     return connected;
 }
 
-void ServerSocket::setOnConnectedCallback(std::function<void()> callback){
+std::mutex& ServerSocket::getReceiveMutex() {
+    return receiveMutex;
+}
+
+std::condition_variable& ServerSocket::getReceiveCondition() {
+    return receiveCondition;
+}
+
+std::queue<MessageFrame>& ServerSocket::getReceiveQueue() {
+    return receiveQueue;
+}
+
+void ServerSocket::setOnConnectedCallback(std::function<void()> callback) {
     onConnectedCallback = callback;
 }
 
 void ServerSocket::setOnDisconnectedCallback(std::function<void()> callback){
     onDisconnectedCallback = callback;
-}
-
-void ServerSocket::setOnMessageReceivedCallback(std::function<void(const MessageFrame&)> callback){
-    onMessageReceivedCallback = callback;
 }
 
 void ServerSocket::receiveMessages(){
@@ -176,10 +218,9 @@ void ServerSocket::receiveMessages(){
                 json j = json::parse(jsonStr);
                 MessageFrame message = j.get<MessageFrame>();
 
-                std::lock_guard<std::mutex> lock(receiveMutex);
-                receiveQueue.push(message);
-                if (onMessageReceivedCallback) {
-                    onMessageReceivedCallback(message);
+                {
+                    std::lock_guard<std::mutex> lock(receiveMutex);
+                    receiveQueue.push(message);
                 }
                 receiveCondition.notify_one();
             } catch (const std::exception& e) {

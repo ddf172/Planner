@@ -3,7 +3,14 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <optional>
 #include "message/MessageFrame.hpp"
+
+struct CompleteMessage
+{
+    MessageHeader header;
+    std::string payload;
+};
 
 class MessageAssembler {
 private:
@@ -13,9 +20,9 @@ public:
     /**
      * @brief Adds a fragment to the assembler
      * @param frame The message frame fragment
-     * @return true if message is now complete, false if more fragments needed
+     * @return An optional containing the message ID if the message is complete, otherwise std::nullopt
      */
-    bool addFragment(const MessageFrame& frame);
+    std::optional<std::string> addFragment(const MessageFrame& frame);
     
     /**
      * @brief Checks if message is complete
@@ -29,7 +36,7 @@ public:
      * @param messageId The message ID
      * @return The complete assembled payload
      */
-    std::string getCompleteMessage(const std::string& messageId);
+    std::string getAssembledMessage(const std::string& messageId);
     
     /**
      * @brief Gets the message type of completed message

@@ -1,5 +1,7 @@
 #include <iostream>
 #include <memory>
+#include <thread>
+#include <chrono>
 #include "core/System.hpp"
 #include "commands/handlers/DataHandler.hpp"
 #include "commands/handlers/DebugHandler.hpp"
@@ -15,6 +17,18 @@ int main() {
     system.registerHandler(std::make_unique<CommandHandler>());
     
     system.start();
+    
+    std::cout << "Server started. Waiting for client connection..." << std::endl;
+    
+    // Wait for client connection in a loop
+    while (true) {
+        if (system.acceptConnection()) {
+            std::cout << "Client connected successfully!" << std::endl;
+            break;
+        }
+        // Small delay to avoid busy waiting
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    }
     
     std::cout << "Server is running. Press Enter to stop..." << std::endl;
     std::cin.get(); // Czeka na naciśnięcie Enter

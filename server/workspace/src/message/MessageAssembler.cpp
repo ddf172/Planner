@@ -1,36 +1,15 @@
 #include "message/MessageAssembler.hpp"
 #include <algorithm>
-#include <iostream>
+#include <numeric>
 
-bool MessageAssembler::addFragment(const MessageFrame& frame) {
-    const std::string& messageId = frame.header.messageId;
-    
-    // Add fragment to the collection
-    incompleteMessages[messageId].push_back(frame);
-    
-    // Check if this was the last fragment
-    if (frame.header.isLast) {
-        // Verify we have all fragments
-        auto& fragments = incompleteMessages[messageId];
-        
-        // Sort fragments by sequence number
-        std::sort(fragments.begin(), fragments.end(), 
-            [](const MessageFrame& a, const MessageFrame& b) {
-                return a.header.sequenceNumber < b.header.sequenceNumber;
-            });
-        
-        // Check for missing fragments
-        for (size_t i = 0; i < fragments.size(); ++i) {
-            if (fragments[i].header.sequenceNumber != static_cast<int>(i)) {
-                std::cerr << "Missing fragment " << i << " for message " << messageId << std::endl;
-                return false;
-            }
-        }
-        
-        return true; // Message is complete
+std::optional<std::string> MessageAssembler::addFragment(const MessageFrame& frame)
+{
+    incompleteMessages[frame.header.messageId].push_back(frame);
+    if (isMessageComplete(frame.header.messageId))
+    {
+        return frame.header.messageId;
     }
-    
-    return false; // More fragments needed
+    return std::nullopt;
 }
 
 bool MessageAssembler::isMessageComplete(const std::string& messageId) const {
@@ -51,32 +30,38 @@ bool MessageAssembler::isMessageComplete(const std::string& messageId) const {
         }
     }
     
-    return false;
+    // Check for missing fragments
+    size_t totalFragments = fragments.size();
+    size_t expectedFragments = 0;
+    for (const auto& fragment : fragments) {
+        if (fragment.header.sequenceNumber >= static_cast<int>(expectedFragments)) {
+            expectedFragments = fragment.header.sequenceNumber + 1;
+        }
+    }
+    return totalFragments == expectedFragments;
 }
 
-std::string MessageAssembler::getCompleteMessage(const std::string& messageId) {
-    auto it = incompleteMessages.find(messageId);
-    if (it == incompleteMessages.end()) {
+std::string MessageAssembler::getAssembledMessage(const std::string& messageId)
+{
+    if (!isMessageComplete(messageId))
+    {
         return "";
     }
-    
-    auto& fragments = it->second;
-    if (fragments.empty()) {
-        return "";
-    }
-    
+
+    auto& fragments = incompleteMessages[messageId];
+
     // Sort fragments by sequence number
-    std::sort(fragments.begin(), fragments.end(), 
+    std::sort(fragments.begin(), fragments.end(),
         [](const MessageFrame& a, const MessageFrame& b) {
             return a.header.sequenceNumber < b.header.sequenceNumber;
         });
-    
+
     // Assemble the complete message
     std::string completeMessage;
     for (const auto& fragment : fragments) {
         completeMessage += fragment.payload;
     }
-    
+
     return completeMessage;
 }
 

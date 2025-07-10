@@ -6,30 +6,20 @@
 #include <thread>
 #include <chrono>
 #include "network/ServerSocket.hpp"
-#include "message/MessageAssembler.hpp"
-#include "message/MessageFragmenter.hpp"
-#include "commands/HandlerDispatcher.hpp"
+#include "message/MessageProcessor.hpp"
 #include "commands/IMessageHandler.hpp"
 
 class System {
 private:
     ServerSocket serverSocket;
-    MessageAssembler assembler;
-    MessageFragmenter fragmenter;
-    HandlerDispatcher dispatcher;
+    MessageProcessor messageProcessor;
     
     std::vector<std::unique_ptr<IMessageHandler>> handlers;
     std::atomic<bool> running;
-    std::thread mainThread;
     
     // Internal callback methods
-    void onMessageReceived(const MessageFrame& frame);
-    void onMessageAssembled(const std::string& messageId, const std::string& payload, MessageType type);
     void onClientConnected();
     void onClientDisconnected();
-    
-    // Main processing loop
-    void processLoop();
     
 public:
     System(int port);
@@ -39,6 +29,12 @@ public:
      * @brief Starts the system
      */
     void start();
+    
+    /**
+     * @brief Try to accept a client connection
+     * @return true if connection accepted
+     */
+    bool acceptConnection();
     
     /**
      * @brief Stops the system

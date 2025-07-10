@@ -1,19 +1,28 @@
 #include "core/System.hpp"
 #include <iostream>
+#include <chrono>
 
-System::System(int port) : serverSocket(port), running(false) {
-    // Set up ServerSocket callbacks
-    serverSocket.setOnMessageReceivedCallback([this](const MessageFrame& frame) {
-        this->onMessageReceived(frame);
-    });
-    
+System::System(int port) : serverSocket(port), messageProcessor(this), running(false) {
+    // Set up ServerSocket callbacks for connection events
+    // Używamy try-catch w callbackach, aby wyjątki nie wpływały na działanie ServerSocket
     serverSocket.setOnConnectedCallback([this]() {
-        this->onClientConnected();
+        try {
+            this->onClientConnected();
+        } catch (const std::exception& e) {
+            std::cerr << "Exception in onClientConnected callback: " << e.what() << std::endl;
+        }
     });
     
     serverSocket.setOnDisconnectedCallback([this]() {
-        this->onClientDisconnected();
+        try {
+            this->onClientDisconnected();
+        } catch (const std::exception& e) {
+            std::cerr << "Exception in onClientDisconnected callback: " << e.what() << std::endl;
+        }
     });
+    
+    // Give MessageProcessor access to ServerSocket for direct queue access
+    messageProcessor.setServerSocket(&serverSocket);
     
     std::cout << "System initialized on port " << port << std::endl;
 }
@@ -29,23 +38,49 @@ void System::start() {
     }
     
     running.store(true);
-    mainThread = std::thread(&System::processLoop, this);
+    
+    // Start message processor
+    messageProcessor.start();
     
     std::cout << "System started" << std::endl;
 }
 
 void System::stop() {
     if (!running.load()) {
+        std::cout << "System is already stopped" << std::endl;
         return;
     }
     
+    std::cout << "System stopping..." << std::endl;
+    
+    // Najpierw ustawiamy flagę running na false, żeby zapobiec nowym operacjom
     running.store(false);
     
-    if (mainThread.joinable()) {
-        mainThread.join();
+    try {
+        // Rozłączamy aktualnego klienta, jeśli jest podłączony
+        if (serverSocket.isConnected()) {
+            std::cout << "Disconnecting client during system shutdown" << std::endl;
+            serverSocket.disconnect();
+        }
+        
+        // Powiadamiamy MessageProcessor, żeby nie czekał na więcej wiadomości
+        // i nie używał serverSocket (który może być już w trakcie destrukcji)
+        std::cout << "Setting MessageProcessor serverSocket to nullptr" << std::endl;
+        messageProcessor.setServerSocket(nullptr);
+        
+        // Potem zatrzymujemy MessageProcessor
+        std::cout << "Stopping MessageProcessor" << std::endl;
+        messageProcessor.stop();
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Exception during system stop: " << e.what() << std::endl;
     }
     
     std::cout << "System stopped" << std::endl;
+}
+
+bool System::acceptConnection() {
+    return serverSocket.accept();
 }
 
 void System::registerHandler(std::unique_ptr<IMessageHandler> handler) {
@@ -55,7 +90,7 @@ void System::registerHandler(std::unique_ptr<IMessageHandler> handler) {
     }
     
     MessageType type = handler->getHandledType();
-    dispatcher.registerHandler(type, handler.get());
+    messageProcessor.registerHandler(type, handler.get());
     handlers.push_back(std::move(handler));
     
     std::cout << "Handler registered for message type: " << static_cast<int>(type) << std::endl;
@@ -67,22 +102,23 @@ bool System::sendMessage(const std::string& payload, MessageType type) {
         return false;
     }
     
-    auto fragments = fragmenter.fragment(payload, type);
+    // Generate unique message ID for outgoing message
+    static int counter = 0;
+    std::string messageId = "sys-msg-" + std::to_string(++counter);
     
-    for (const auto& fragment : fragments) {
-        if (!serverSocket.sendMessage(fragment)) {
-            std::cerr << "Failed to send message fragment" << std::endl;
-            return false;
-        }
-    }
-    
+    messageProcessor.sendMessage(messageId, payload, type);
     return true;
 }
 
 bool System::sendResponse(const std::string& messageId, const std::string& payload, MessageType type) {
-    // For now, just send as regular message
-    // In future, could include messageId in response for correlation
-    return sendMessage(payload, type);
+    if (!isClientConnected()) {
+        std::cerr << "Cannot send response: no client connected" << std::endl;
+        return false;
+    }
+    
+    // Use provided messageId for response correlation
+    messageProcessor.sendMessage(messageId, payload, type);
+    return true;
 }
 
 bool System::isRunning() const {
@@ -97,33 +133,9 @@ void System::printStats() const {
     std::cout << "=== System Statistics ===" << std::endl;
     std::cout << "Running: " << (running.load() ? "Yes" : "No") << std::endl;
     std::cout << "Client connected: " << (isClientConnected() ? "Yes" : "No") << std::endl;
-    std::cout << "Registered handlers: " << dispatcher.getHandlerCount() << std::endl;
-    std::cout << "Incomplete messages: " << assembler.getIncompleteMessageCount() << std::endl;
+    std::cout << "Message processor running: " << (messageProcessor.isRunning() ? "Yes" : "No") << std::endl;
+    std::cout << "Handlers count: " << handlers.size() << std::endl;
     std::cout << "=========================" << std::endl;
-}
-
-void System::onMessageReceived(const MessageFrame& frame) {
-    std::cout << "Received fragment: " << frame.header.messageId 
-              << " [" << frame.header.sequenceNumber << "]" << std::endl;
-    
-    bool isComplete = assembler.addFragment(frame);
-    
-    if (isComplete) {
-        std::string messageId = frame.header.messageId;
-        std::string payload = assembler.getCompleteMessage(messageId);
-        MessageType type = assembler.getMessageType(messageId);
-        
-        onMessageAssembled(messageId, payload, type);
-        assembler.cleanup(messageId);
-    }
-}
-
-void System::onMessageAssembled(const std::string& messageId, const std::string& payload, MessageType type) {
-    std::cout << "Message assembled: " << messageId << " (type: " << static_cast<int>(type) << ")" << std::endl;
-    
-    if (!dispatcher.dispatch(messageId, payload, type, *this)) {
-        std::cerr << "Failed to dispatch message: " << messageId << std::endl;
-    }
 }
 
 void System::onClientConnected() {
@@ -132,20 +144,13 @@ void System::onClientConnected() {
 
 void System::onClientDisconnected() {
     std::cout << "Client disconnected" << std::endl;
-}
-
-void System::processLoop() {
-    std::cout << "Starting main processing loop" << std::endl;
     
-    while (running.load()) {
-        // Try to accept new connection if none exists
-        if (!isClientConnected()) {
-            serverSocket.accept();
-        }
-        
-        // Sleep to prevent busy waiting
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    // Jeśli system jest w trakcie zamykania, nie robimy nic więcej
+    if (!running.load()) {
+        std::cout << "System is already shutting down - ignoring disconnect event" << std::endl;
+        return;
     }
     
-    std::cout << "Main processing loop ended" << std::endl;
+    // Tutaj można dodać logikę, która ma się wykonać po rozłączeniu klienta
+    // np. czyszczenie zasobów, resetowanie stanu, itp.
 }

@@ -68,13 +68,39 @@ void CommandHandler::handleStopCommand(const std::string& messageId, const json&
         {"message", "Server shutdown initiated"}
     };
     
-    system.sendResponse(messageId, response.dump(), MessageType::Command);
+    // Wysyłamy odpowiedź
+    try {
+        system.sendResponse(messageId, response.dump(), MessageType::Command);
+    } catch (const std::exception& e) {
+        std::cerr << "Error sending stop response: " << e.what() << std::endl;
+    }
     
-    // Stop the system after sending response
-    std::thread([&system]() {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Give time to send response
-        system.stop();
-    }).detach();
+    // Dodajemy bardziej widoczne logi dla debugowania
+    std::cout << "=============================================" << std::endl;
+    std::cout << "STOPPING SYSTEM after STOP command" << std::endl;
+    std::cout << "=============================================" << std::endl;
+    
+    // Dłuższe opóźnienie, aby upewnić się, że odpowiedź dotrze
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    
+    // Zatrzymujemy system w NOWYM wątku, aby uniknąć deadlocka
+    // To jest kluczowe - nie możemy zatrzymać systemu z wątku przetwarzania wiadomości
+    std::thread stopThread([&system]() {
+        std::cout << "Executing system.stop() in separate thread" << std::endl;
+        try {
+            system.stop();
+        } catch (const std::exception& e) {
+            std::cerr << "Exception during system.stop(): " << e.what() << std::endl;
+        }
+        std::cout << "System stop completed in separate thread" << std::endl;
+    });
+    
+    // Ten wątek musi być detached, ponieważ CommandHandler nie będzie czekał na jego zakończenie
+    // Nie możemy użyć join(), ponieważ cały system się zamyka
+    stopThread.detach();
+    
+    // Dodajemy małe opóźnienie, aby dać wątkowi stopThread szansę na rozpoczęcie działania
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 void CommandHandler::handleStatusCommand(const std::string& messageId, const json& commandData, System& system) {
