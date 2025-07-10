@@ -8,7 +8,7 @@
 // Forward declaration
 class System;
 
-class CommandDispatcher {
+class HandlerDispatcher {
 private:
     std::map<MessageType, IMessageHandler*> handlers;
     

@@ -1,8 +1,8 @@
-#include "commands/CommandDispatcher.hpp"
+#include "commands/HandlerDispatcher.hpp"
 #include "core/System.hpp"
 #include <iostream>
 
-void CommandDispatcher::registerHandler(MessageType type, IMessageHandler* handler) {
+void HandlerDispatcher::registerHandler(MessageType type, IMessageHandler* handler) {
     if (handler == nullptr) {
         std::cerr << "Cannot register null handler" << std::endl;
         return;
@@ -11,7 +11,7 @@ void CommandDispatcher::registerHandler(MessageType type, IMessageHandler* handl
     handlers[type] = handler;
 }
 
-bool CommandDispatcher::dispatch(const std::string& messageId, const std::string& payload, MessageType type, System& system) {
+bool HandlerDispatcher::dispatch(const std::string& messageId, const std::string& payload, MessageType type, System& system) {
     auto it = handlers.find(type);
     if (it == handlers.end()) {
         std::cerr << "No handler registered for message type: " << static_cast<int>(type) << std::endl;
@@ -27,10 +27,10 @@ bool CommandDispatcher::dispatch(const std::string& messageId, const std::string
     }
 }
 
-bool CommandDispatcher::hasHandler(MessageType type) const {
+bool HandlerDispatcher::hasHandler(MessageType type) const {
     return handlers.find(type) != handlers.end();
 }
 
-size_t CommandDispatcher::getHandlerCount() const {
+size_t HandlerDispatcher::getHandlerCount() const {
     return handlers.size();
 }

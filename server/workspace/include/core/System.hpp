@@ -8,7 +8,7 @@
 #include "network/ServerSocket.hpp"
 #include "message/MessageAssembler.hpp"
 #include "message/MessageFragmenter.hpp"
-#include "commands/CommandDispatcher.hpp"
+#include "commands/HandlerDispatcher.hpp"
 #include "commands/IMessageHandler.hpp"
 
 class System {
@@ -16,7 +16,7 @@ private:
     ServerSocket serverSocket;
     MessageAssembler assembler;
     MessageFragmenter fragmenter;
-    CommandDispatcher dispatcher;
+    HandlerDispatcher dispatcher;
     
     std::vector<std::unique_ptr<IMessageHandler>> handlers;
     std::atomic<bool> running;
