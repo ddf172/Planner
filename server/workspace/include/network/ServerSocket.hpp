@@ -62,7 +62,7 @@ public:
     * @return true if the disconnection was successful, false if no client is connected.
     */
     bool disconnect();
-    bool isConnected();
+    bool isConnected() const;
 
     void setOnConnectedCallback(std::function<void()> callback);
     void setOnDisconnectedCallback(std::function<void()> callback);

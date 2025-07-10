@@ -127,7 +127,7 @@ bool ServerSocket::disconnect(){
     return true;
 }
 
-bool ServerSocket::isConnected(){
+bool ServerSocket::isConnected() const {
     return connected;
 }
 

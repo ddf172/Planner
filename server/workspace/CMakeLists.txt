@@ -9,12 +9,10 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(NLOHMANN_JSON_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../extern/nlohmann)
 
-set(PROJECT_SOURCES
-    main.cpp
-    src/network/ServerSocket.cpp
-    include/network/ServerSocket.hpp
-    include/message/MessageFrame.hpp
-    include/schedule/ScheduleData.hpp
+# Rekurencyjnie znajdź wszystkie pliki .cpp i .hpp
+file(GLOB_RECURSE PROJECT_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp
 )
 
 add_executable(server ${PROJECT_SOURCES})
@@ -24,6 +22,17 @@ target_include_directories(server PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${NLOHMANN_JSON_DIR}
 )
+
+# -----
+# Add test client executable
+add_executable(test_client test_client.cpp)
+
+target_include_directories(test_client PRIVATE 
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${NLOHMANN_JSON_DIR}
+)
+# -----
 
 set_target_properties(server PROPERTIES
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
