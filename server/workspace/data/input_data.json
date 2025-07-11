@@ -1,49 +1,320 @@
 {
-    "timeblocks": [
-      { "id": "TB1", "day": "Monday", "start": 800, "end": 945, "duration": 105 },
-      { "id": "TB2", "day": "Monday", "start": 1000, "end": 1145, "duration": 105 }
-    ],
-    "classes": [
-      {
-        "id": "C1",
-        "name": "Informatyka podstawowa",
-        "subject": "CS",
-        "difficulty": 1,
-        "constraints": [
-          {
-            "type": "RequiredRoomFeature",
-            "data": { "feature": "computers" }
-          }
-        ]
-      }
-    ],
-    "groups": [
-      {
-        "id": "G1",
-        "name": "1A",
-        "parentGroupId": "",
-        "constraints": []
-      }
-    ],
-    "rooms": [
-      {
-        "id": "R1",
-        "name": "Sala komputerowa 101",
-        "features": ["computers", "projector"]
-      }
-    ],
-    "teachers": [
-      {
-        "id": "T1",
-        "name": "Anna Kowalska",
-        "subject": "CS",
-        "constraints": [
-          {
-            "type": "Unavailable",
-            "data": { "days": ["Friday"], "from": 1400, "to": 1600 }
-          }
-        ]
-      }
-    ]
-  }
+  "timeBlocks": [
+    { "id": "TB1", "day": "Monday", "start": 800, "end": 845, "duration": 45 },
+    { "id": "TB2", "day": "Monday", "start": 855, "end": 940, "duration": 45 },
+    { "id": "TB3", "day": "Monday", "start": 950, "end": 1035, "duration": 45 },
+    { "id": "TB4", "day": "Monday", "start": 1045, "end": 1130, "duration": 45 },
+    { "id": "TB5", "day": "Monday", "start": 1200, "end": 1245, "duration": 45 },
+    { "id": "TB6", "day": "Monday", "start": 1255, "end": 1340, "duration": 45 },
+    { "id": "TB7", "day": "Monday", "start": 1350, "end": 1435, "duration": 45 },
+    { "id": "TB8", "day": "Monday", "start": 1445, "end": 1530, "duration": 45 },
+    
+    { "id": "TB9", "day": "Tuesday", "start": 800, "end": 845, "duration": 45 },
+    { "id": "TB10", "day": "Tuesday", "start": 855, "end": 940, "duration": 45 },
+    { "id": "TB11", "day": "Tuesday", "start": 950, "end": 1035, "duration": 45 },
+    { "id": "TB12", "day": "Tuesday", "start": 1045, "end": 1130, "duration": 45 },
+    { "id": "TB13", "day": "Tuesday", "start": 1200, "end": 1245, "duration": 45 },
+    { "id": "TB14", "day": "Tuesday", "start": 1255, "end": 1340, "duration": 45 },
+    { "id": "TB15", "day": "Tuesday", "start": 1350, "end": 1435, "duration": 45 },
+    { "id": "TB16", "day": "Tuesday", "start": 1445, "end": 1530, "duration": 45 },
+    
+    { "id": "TB17", "day": "Wednesday", "start": 800, "end": 845, "duration": 45 },
+    { "id": "TB18", "day": "Wednesday", "start": 855, "end": 940, "duration": 45 },
+    { "id": "TB19", "day": "Wednesday", "start": 950, "end": 1035, "duration": 45 },
+    { "id": "TB20", "day": "Wednesday", "start": 1045, "end": 1130, "duration": 45 },
+    { "id": "TB21", "day": "Wednesday", "start": 1200, "end": 1245, "duration": 45 },
+    { "id": "TB22", "day": "Wednesday", "start": 1255, "end": 1340, "duration": 45 },
+    { "id": "TB23", "day": "Wednesday", "start": 1350, "end": 1435, "duration": 45 },
+    { "id": "TB24", "day": "Wednesday", "start": 1445, "end": 1530, "duration": 45 },
+    
+    { "id": "TB25", "day": "Thursday", "start": 800, "end": 845, "duration": 45 },
+    { "id": "TB26", "day": "Thursday", "start": 855, "end": 940, "duration": 45 },
+    { "id": "TB27", "day": "Thursday", "start": 950, "end": 1035, "duration": 45 },
+    { "id": "TB28", "day": "Thursday", "start": 1045, "end": 1130, "duration": 45 },
+    { "id": "TB29", "day": "Thursday", "start": 1200, "end": 1245, "duration": 45 },
+    { "id": "TB30", "day": "Thursday", "start": 1255, "end": 1340, "duration": 45 },
+    { "id": "TB31", "day": "Thursday", "start": 1350, "end": 1435, "duration": 45 },
+    { "id": "TB32", "day": "Thursday", "start": 1445, "end": 1530, "duration": 45 },
+    
+    { "id": "TB33", "day": "Friday", "start": 800, "end": 845, "duration": 45 },
+    { "id": "TB34", "day": "Friday", "start": 855, "end": 940, "duration": 45 },
+    { "id": "TB35", "day": "Friday", "start": 950, "end": 1035, "duration": 45 },
+    { "id": "TB36", "day": "Friday", "start": 1045, "end": 1130, "duration": 45 },
+    { "id": "TB37", "day": "Friday", "start": 1200, "end": 1245, "duration": 45 },
+    { "id": "TB38", "day": "Friday", "start": 1255, "end": 1340, "duration": 45 }
+  ],
   
+  "subjects": [
+    { "id": "MATH", "name": "Mathematics", "hoursPerWeek": 4.0, "difficultyLevel": 4 },
+    { "id": "PHYSICS", "name": "Physics", "hoursPerWeek": 3.0, "difficultyLevel": 5 },
+    { "id": "CHEMISTRY", "name": "Chemistry", "hoursPerWeek": 2.0, "difficultyLevel": 4 },
+    { "id": "BIOLOGY", "name": "Biology", "hoursPerWeek": 2.0, "difficultyLevel": 3 },
+    { "id": "ENGLISH", "name": "English Language", "hoursPerWeek": 3.0, "difficultyLevel": 3 },
+    { "id": "LITERATURE", "name": "Literature", "hoursPerWeek": 2.0, "difficultyLevel": 2 },
+    { "id": "HISTORY", "name": "History", "hoursPerWeek": 2.0, "difficultyLevel": 2 },
+    { "id": "GEOGRAPHY", "name": "Geography", "hoursPerWeek": 1.5, "difficultyLevel": 2 },
+    { "id": "CS", "name": "Computer Science", "hoursPerWeek": 2.0, "difficultyLevel": 3 },
+    { "id": "PE", "name": "Physical Education", "hoursPerWeek": 2.0, "difficultyLevel": 1 },
+    { "id": "ART", "name": "Art", "hoursPerWeek": 1.0, "difficultyLevel": 1 },
+    { "id": "MUSIC", "name": "Music", "hoursPerWeek": 1.0, "difficultyLevel": 1 }
+  ],
+  
+  "groups": [
+    { "id": "G1A", "name": "Class 1A", "size": 28, "parentGroupId": "" },
+    { "id": "G1B", "name": "Class 1B", "size": 26, "parentGroupId": "" },
+    { "id": "G2A", "name": "Class 2A", "size": 30, "parentGroupId": "" },
+    { "id": "G2B", "name": "Class 2B", "size": 25, "parentGroupId": "" },
+    { "id": "G3A", "name": "Class 3A", "size": 22, "parentGroupId": "" },
+    { "id": "G3B", "name": "Class 3B", "size": 24, "parentGroupId": "" },
+    { "id": "G1A_LANG1", "name": "1A English Group 1", "size": 14, "parentGroupId": "G1A" },
+    { "id": "G1A_LANG2", "name": "1A English Group 2", "size": 14, "parentGroupId": "G1A" },
+    { "id": "G1B_LANG1", "name": "1B English Group 1", "size": 13, "parentGroupId": "G1B" },
+    { "id": "G1B_LANG2", "name": "1B English Group 2", "size": 13, "parentGroupId": "G1B" }
+  ],
+  
+  "rooms": [
+    { "id": "R101", "name": "Classroom 101", "capacity": 30, "features": ["whiteboard", "projector"] },
+    { "id": "R102", "name": "Classroom 102", "capacity": 30, "features": ["whiteboard", "projector"] },
+    { "id": "R103", "name": "Classroom 103", "capacity": 32, "features": ["whiteboard", "smartboard"] },
+    { "id": "R104", "name": "Classroom 104", "capacity": 28, "features": ["whiteboard"] },
+    { "id": "R105", "name": "Classroom 105", "capacity": 35, "features": ["whiteboard", "projector", "speakers"] },
+    { "id": "RLAB_PHYSICS", "name": "Physics Laboratory", "capacity": 24, "features": ["lab_equipment", "safety_equipment", "whiteboard"] },
+    { "id": "RLAB_CHEMISTRY", "name": "Chemistry Laboratory", "capacity": 20, "features": ["lab_equipment", "safety_equipment", "fume_hood", "whiteboard"] },
+    { "id": "RLAB_BIOLOGY", "name": "Biology Laboratory", "capacity": 24, "features": ["lab_equipment", "microscopes", "whiteboard"] },
+    { "id": "RLAB_CS", "name": "Computer Laboratory", "capacity": 30, "features": ["computers", "projector", "internet", "software"] },
+    { "id": "RGYM", "name": "Gymnasium", "capacity": 60, "features": ["sports_equipment", "changing_rooms"] },
+    { "id": "RART", "name": "Art Studio", "capacity": 25, "features": ["art_supplies", "easels", "natural_light"] },
+    { "id": "RMUSIC", "name": "Music Room", "capacity": 30, "features": ["piano", "instruments", "soundproof", "audio_system"] },
+    { "id": "RLIBRARY", "name": "Library", "capacity": 40, "features": ["books", "computers", "quiet_zone", "projector"] }
+  ],
+  
+  "teachers": [
+    { 
+      "id": "T_SMITH", 
+      "name": "Sarah Smith", 
+      "subjects": ["MATH", "PHYSICS"], 
+      "availableTimeBlocks": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 26, 27, 28, 33, 34, 35, 36]
+    },
+    { 
+      "id": "T_JOHNSON", 
+      "name": "Michael Johnson", 
+      "subjects": ["CHEMISTRY", "BIOLOGY"], 
+      "availableTimeBlocks": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
+    },
+    { 
+      "id": "T_WILLIAMS", 
+      "name": "Emma Williams", 
+      "subjects": ["ENGLISH", "LITERATURE"], 
+      "availableTimeBlocks": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]
+    },
+    { 
+      "id": "T_BROWN", 
+      "name": "David Brown", 
+      "subjects": ["HISTORY", "GEOGRAPHY"], 
+      "availableTimeBlocks": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]
+    },
+    { 
+      "id": "T_DAVIS", 
+      "name": "Lisa Davis", 
+      "subjects": ["CS"], 
+      "availableTimeBlocks": [1, 2, 3, 4, 9, 10, 11, 12, 17, 18, 19, 20, 25, 26, 27, 28, 33, 34, 35, 36]
+    },
+    { 
+      "id": "T_MILLER", 
+      "name": "James Miller", 
+      "subjects": ["PE"], 
+      "availableTimeBlocks": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
+    },
+    { 
+      "id": "T_GARCIA", 
+      "name": "Maria Garcia", 
+      "subjects": ["ART", "MUSIC"], 
+      "availableTimeBlocks": [5, 6, 7, 8, 13, 14, 15, 16, 21, 22, 23, 24, 29, 30, 31, 32, 37, 38]
+    },
+    { 
+      "id": "T_WILSON", 
+      "name": "Robert Wilson", 
+      "subjects": ["MATH", "CS"], 
+      "availableTimeBlocks": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 17, 18, 19, 20, 25, 26, 27, 28, 33, 34, 35, 36]
+    }
+  ],
+  
+  "constraints": [
+    {
+      "importance": "Critical",
+      "description": "Chemistry classes require laboratory with safety equipment",
+      "type": "RequiredRoomFeature",
+      "data": {
+        "subjectId": "CHEMISTRY",
+        "features": ["lab_equipment", "safety_equipment"],
+        "operator": "AND"
+      }
+    },
+    {
+      "importance": "Critical",
+      "description": "Physics classes require laboratory equipment",
+      "type": "RequiredRoomFeature",
+      "data": {
+        "subjectId": "PHYSICS",
+        "features": ["lab_equipment"],
+        "operator": "AND"
+      }
+    },
+    {
+      "importance": "Critical",
+      "description": "Computer Science classes require computer laboratory",
+      "type": "RequiredRoomFeature",
+      "data": {
+        "subjectId": "CS",
+        "features": ["computers", "internet"],
+        "operator": "AND"
+      }
+    },
+    {
+      "importance": "Critical",
+      "description": "Physical Education requires gymnasium",
+      "type": "RequiredRoomFeature",
+      "data": {
+        "subjectId": "PE",
+        "features": ["sports_equipment"],
+        "operator": "AND"
+      }
+    },
+    {
+      "importance": "Critical",
+      "description": "Art classes require art studio",
+      "type": "RequiredRoomFeature",
+      "data": {
+        "subjectId": "ART",
+        "features": ["art_supplies"],
+        "operator": "AND"
+      }
+    },
+    {
+      "importance": "Critical",
+      "description": "Music classes require music room",
+      "type": "RequiredRoomFeature",
+      "data": {
+        "subjectId": "MUSIC",
+        "features": ["piano", "instruments"],
+        "operator": "OR"
+      }
+    },
+    {
+      "importance": "Critical",
+      "description": "Sarah Smith unavailable Wednesday afternoons",
+      "type": "TeacherUnavailable",
+      "data": {
+        "teacherId": "T_SMITH",
+        "timeBlocks": ["TB21", "TB22", "TB23", "TB24"],
+        "reason": "Department meetings"
+      }
+    },
+    {
+      "importance": "Critical",
+      "description": "Michael Johnson unavailable Thursday and Friday afternoons",
+      "type": "TeacherUnavailable",
+      "data": {
+        "teacherId": "T_JOHNSON",
+        "days": ["Thursday", "Friday"],
+        "timeRanges": [{"start": 1350, "end": 1530}],
+        "reason": "Research work"
+      }
+    },
+    {
+      "importance": "Important",
+      "description": "Teachers should not teach more than 6 hours per day",
+      "type": "MaxTeachingHours",
+      "data": {
+        "teacherId": "*",
+        "maxHours": 6,
+        "period": "day"
+      }
+    },
+    {
+      "importance": "Important",
+      "description": "Minimum 10 minutes break between classes for teachers",
+      "type": "MinBreakBetweenClasses",
+      "data": {
+        "teacherId": "*",
+        "minBreakMinutes": 10,
+        "applyToConsecutive": true
+      }
+    },
+    {
+      "importance": "Important",
+      "description": "Groups should not have more than 7 classes per day",
+      "type": "MaxClassesPerDay",
+      "data": {
+        "groupId": "*",
+        "maxClasses": 7,
+        "includeBreaks": false
+      }
+    },
+    {
+      "importance": "Important",
+      "description": "Mathematics classes should be spread across the week",
+      "type": "SpreadAcrossWeek",
+      "data": {
+        "subjectId": "MATH",
+        "groupId": "*",
+        "minDaysBetween": 1,
+        "preferredDays": ["Monday", "Tuesday", "Wednesday", "Thursday"]
+      }
+    },
+    {
+      "importance": "Important",
+      "description": "English language groups should be split for better learning",
+      "type": "GroupSplit",
+      "data": {
+        "groupId": "G1A",
+        "maxSubgroupSize": 15,
+        "subjectIds": ["ENGLISH"],
+        "parallelTeaching": true
+      }
+    },
+    {
+      "importance": "Important",
+      "description": "English language groups should be split for better learning",
+      "type": "GroupSplit",
+      "data": {
+        "groupId": "G1B",
+        "maxSubgroupSize": 15,
+        "subjectIds": ["ENGLISH"],
+        "parallelTeaching": true
+      }
+    },
+    {
+      "importance": "Optional",
+      "description": "Avoid consecutive difficult subjects",
+      "type": "AvoidConsecutive",
+      "data": {
+        "subjectIds": ["MATH", "PHYSICS", "CHEMISTRY"],
+        "groupId": "*",
+        "maxConsecutive": 2
+      }
+    },
+    {
+      "importance": "Optional",
+      "description": "Teachers prefer morning hours for complex subjects",
+      "type": "TeacherPreferred",
+      "data": {
+        "teacherId": "*",
+        "timeRanges": [{"start": 800, "end": 1130}],
+        "subjectIds": ["MATH", "PHYSICS", "CHEMISTRY"],
+        "priority": 7
+      }
+    },
+    {
+      "importance": "Optional",
+      "description": "Physical Education preferred in afternoon",
+      "type": "TeacherPreferred",
+      "data": {
+        "teacherId": "T_MILLER",
+        "timeRanges": [{"start": 1200, "end": 1530}],
+        "subjectIds": ["PE"],
+        "priority": 6
+      }
+    }
+  ]
+}
