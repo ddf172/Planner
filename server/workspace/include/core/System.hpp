@@ -8,11 +8,13 @@
 #include "network/ServerSocket.hpp"
 #include "message/MessageProcessor.hpp"
 #include "commands/IMessageHandler.hpp"
+#include "commands/HandlerDispatcher.hpp"
 
 class System {
 private:
     ServerSocket serverSocket;
     MessageProcessor messageProcessor;
+    HandlerDispatcher dispatcher;
     
     std::vector<std::unique_ptr<IMessageHandler>> handlers;
     std::atomic<bool> running;
@@ -80,4 +82,12 @@ public:
      * @brief Gets system statistics
      */
     void printStats() const;
+    
+    /**
+     * @brief Handles a complete message from MessageProcessor
+     * @param messageId Message ID
+     * @param payload Message payload
+     * @param type Message type
+     */
+    void handleCompleteMessage(const std::string& messageId, const std::string& payload, MessageType type);
 };

@@ -3,7 +3,6 @@
 #include "message/MessageFrame.hpp"
 #include "message/MessageAssembler.hpp"
 #include "message/MessageFragmenter.hpp"
-#include "commands/HandlerDispatcher.hpp"
 #include <queue>
 #include <mutex>
 #include <condition_variable>
@@ -30,7 +29,6 @@ private:
     // Message processing components
     MessageAssembler assembler;
     MessageFragmenter fragmenter;
-    HandlerDispatcher dispatcher;
     
     // Reference to system for handlers
     System* system;
@@ -56,7 +54,6 @@ public:
     
     // Configuration methods
     void setServerSocket(ServerSocket* socket);
-    void registerHandler(MessageType type, IMessageHandler* handler);
     
     // Message handling
     void sendMessage(const std::string& messageId, const std::string& payload, MessageType type);

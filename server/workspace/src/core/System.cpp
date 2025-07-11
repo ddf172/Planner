@@ -4,7 +4,6 @@
 
 System::System(int port) : serverSocket(port), messageProcessor(this), running(false) {
     // Set up ServerSocket callbacks for connection events
-    // Używamy try-catch w callbackach, aby wyjątki nie wpływały na działanie ServerSocket
     serverSocket.setOnConnectedCallback([this]() {
         try {
             this->onClientConnected();
@@ -53,22 +52,17 @@ void System::stop() {
     
     std::cout << "System stopping..." << std::endl;
     
-    // Najpierw ustawiamy flagę running na false, żeby zapobiec nowym operacjom
     running.store(false);
     
     try {
-        // Rozłączamy aktualnego klienta, jeśli jest podłączony
         if (serverSocket.isConnected()) {
             std::cout << "Disconnecting client during system shutdown" << std::endl;
             serverSocket.disconnect();
         }
         
-        // Powiadamiamy MessageProcessor, żeby nie czekał na więcej wiadomości
-        // i nie używał serverSocket (który może być już w trakcie destrukcji)
         std::cout << "Setting MessageProcessor serverSocket to nullptr" << std::endl;
         messageProcessor.setServerSocket(nullptr);
         
-        // Potem zatrzymujemy MessageProcessor
         std::cout << "Stopping MessageProcessor" << std::endl;
         messageProcessor.stop();
     }
@@ -90,7 +84,7 @@ void System::registerHandler(std::unique_ptr<IMessageHandler> handler) {
     }
     
     MessageType type = handler->getHandledType();
-    messageProcessor.registerHandler(type, handler.get());
+    dispatcher.registerHandler(type, handler.get());
     handlers.push_back(std::move(handler));
     
     std::cout << "Handler registered for message type: " << static_cast<int>(type) << std::endl;
@@ -145,12 +139,13 @@ void System::onClientConnected() {
 void System::onClientDisconnected() {
     std::cout << "Client disconnected" << std::endl;
     
-    // Jeśli system jest w trakcie zamykania, nie robimy nic więcej
     if (!running.load()) {
         std::cout << "System is already shutting down - ignoring disconnect event" << std::endl;
         return;
     }
     
-    // Tutaj można dodać logikę, która ma się wykonać po rozłączeniu klienta
-    // np. czyszczenie zasobów, resetowanie stanu, itp.
+}
+
+void System::handleCompleteMessage(const std::string& messageId, const std::string& payload, MessageType type) {
+    dispatcher.dispatch(messageId, payload, type, *this);
 }

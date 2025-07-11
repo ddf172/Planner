@@ -86,10 +86,6 @@ void MessageProcessor::setServerSocket(ServerSocket* socket) {
     serverSocket = socket;
 }
 
-void MessageProcessor::registerHandler(MessageType type, IMessageHandler* handler) {
-    dispatcher.registerHandler(type, handler);
-}
-
 void MessageProcessor::processLoop()
 {
     std::cout << "MessageProcessor: processLoop started" << std::endl;
@@ -223,7 +219,7 @@ void MessageProcessor::handleInputMessage(const MessageFrame& frame) {
 
 void MessageProcessor::handleCompleteMessage(const std::string& messageId, const std::string& payload, MessageType type) {
     if (system) {
-        dispatcher.dispatch(messageId, payload, type, *system);
+        system->handleCompleteMessage(messageId, payload, type);
     } else {
         std::cerr << "MessageProcessor: No system reference available" << std::endl;
     }
