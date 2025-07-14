@@ -30,9 +30,7 @@ int main() {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
     
-    std::cout << "Server is running. Press Enter to stop..." << std::endl;
+    std::cout << "Press Enter to exit..." << std::endl;
     std::cin.get(); // Czeka na naciśnięcie Enter
-    
-    system.stop();
     return 0;
 }

@@ -21,11 +21,6 @@ private:
     std::thread processingThread;
     std::atomic<bool> running;
     
-    // Input queue (from ServerSocket)
-    std::queue<MessageFrame> inputQueue;
-    mutable std::mutex inputMutex;
-    std::condition_variable inputCondition;
-    
     // Message processing components
     MessageAssembler assembler;
     MessageFragmenter fragmenter;

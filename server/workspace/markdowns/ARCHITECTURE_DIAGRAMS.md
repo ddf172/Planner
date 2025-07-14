@@ -118,54 +118,48 @@ ServerSocket::receiveMessages() [Background Thread]
   
 MessageProcessor::processLoop() [Background Thread]
   │
-  ├─ lock(inputMutex)                           // 🔒 Always first!
+  ├─ Check if serverSocket exists               // Safely handle nullptr
+  │   └─ if (!serverSocket) sleep(100ms) & continue
   │
-  ├─ if (inputQueue.empty())                    // Need to get messages from ServerSocket
-  │   │
-  │   ├─ Check if serverSocket exists           // Safely handle nullptr
-  │   │   └─ if (!serverSocket) wait_for(100ms) // Short timeout if no socket
-  │   │
-  │   └─ lock(serverSocket->getReceiveMutex())  // 🔒 Always second!
-  │      │
-  │      └─ serverSocket->getReceiveCondition().wait_for(lock, 100ms, [predicate]{ 
-  │           // Wait until queue has messages OR processor stopped OR socket disconnected
-  │           return !serverSocket || !running || !serverSocket->getReceiveQueue().empty(); 
-  │         })                                  // Wait with predicate to avoid lost wakeups!
+  ├─ lock(serverSocket->getReceiveMutex())      // 🔒 Direct access to ServerSocket
   │
-  │      │
-  │      └─ if (!running || !serverSocket) return // Exit if shutting down or no socket
+  ├─ serverSocket->getReceiveCondition().wait_for(lock, 100ms, [predicate]{ 
+  │    // Wait until queue has messages OR processor stopped OR socket disconnected
+  │    return !running || !serverSocket || !serverSocket->getReceiveQueue().empty(); 
+  │  })                                         // Wait with predicate to avoid lost wakeups!
   │
-  │      │
-  │      └─ Transfer messages from ServerSocket to local queue (with try-catch):
-  │         while (!serverSocket->getReceiveQueue().empty() && running && serverSocket)
-  │         {
-  │             inputQueue.push(serverSocket->getReceiveQueue().front());
-  │             serverSocket->getReceiveQueue().pop();
-  │         }
+  ├─ if (!running || !serverSocket) return     // Exit if shutting down or no socket
   │
-  ├─ Copy messages to local vector (outside locks)
-  │   └─ localQueue.push_back(inputQueue.front())
+  ├─ Transfer ALL messages to local vector (minimize lock time):
+  │   while (!serverSocket->getReceiveQueue().empty() && running)
+  │   {
+  │       localQueue.push_back(serverSocket->getReceiveQueue().front());
+  │       serverSocket->getReceiveQueue().pop();
+  │   }
   │
-  ├─ unlock(inputMutex)                         // 🔓 Release during processing
+  ├─ unlock(receiveMutex)                       // 🔓 Release lock quickly!
   │
-  └─ Process messages outside of locks:
+  └─ Process messages outside of any locks:
       └─ for(frame : localQueue)
           ├─ messageIdOpt = assembler.addFragment(frame)
           └─ if(messageIdOpt)                   // Message complete
               ├─ payload = assembler.getAssembledMessage()
               └─ handleCompleteMessage()
                   │
-                  └─ dispatcher.dispatch(messageId, payload, type, *system)
+                  └─ system->handleCompleteMessage(messageId, payload, type)
                       │
-                      └─ handler->handle(messageId, payload, system)
+                      └─ dispatcher.dispatch(messageId, payload, type, *system)
                           │
-                          └─ system.sendResponse(messageId, response, type)
+                          └─ handler->handle(messageId, payload, system)
+                              │
+                              └─ system.sendResponse(messageId, response, type)
 
-DEADLOCK PREVENTION:
-🔒 Lock Order: inputMutex → receiveMutex → sendMutex (ALWAYS!)
-🔓 Release locks during message processing
-⏰ Use condition variables with predicates to prevent lost wakeups
+SIMPLIFIED ARCHITECTURE:
+� NO intermediate inputQueue - direct ServerSocket → localQueue transfer
+� Only ONE mutex: receiveMutex (from ServerSocket)
+⏰ Condition variable with predicates to prevent lost wakeups
 🛡️ All operations use try-catch for robustness
+⚡ Minimal lock time - quick transfer, then process outside locks
 ```
 
 ---
@@ -334,35 +328,36 @@ Final State: All threads terminated, all resources cleaned up, no deadlocks
 
 ## 🎯 **Key Architecture Principles**
 
-### **🔒 Mutex Lock Order (Deadlock Prevention)**
+### **🔒 Thread Safety (Simplified)**
 ```
-ALWAYS: inputMutex → receiveMutex → sendMutex
-NEVER:  receiveMutex → inputMutex (DEADLOCK!)
-NEVER:  sendMutex → inputMutex (DEADLOCK!)
-NEVER:  sendMutex → receiveMutex (DEADLOCK!)
+🔒 ONE PRIMARY MUTEX: receiveMutex (from ServerSocket)
+🔒 ONE SECONDARY MUTEX: sendMutex (from ServerSocket)
+✅ NO intermediate mutexes - direct access pattern
+✅ Minimal lock time - quick transfer then process outside locks
 ```
 
 ### **🔄 Thread Responsibilities**
 - **Main Thread**: User interaction, system control
 - **ServerSocket::receiveThread**: Network I/O (receiving)
 - **ServerSocket::sendThread**: Network I/O (sending)  
-- **MessageProcessor::processThread**: Message processing, handler dispatch
+- **MessageProcessor::processThread**: Direct queue access, message processing
+- **System**: HandlerDispatcher management and message routing
 - **CommandHandler Detached Thread**: Safe system shutdown when triggered by client
 
-### **📦 Message Flow Queues**
+### **📦 Simplified Message Flow**
 ```
-Network → receiveQueue → inputQueue → Handler → sendQueue → Network
-         (ServerSocket)  (MessageProcessor)    (ServerSocket)
+Network → receiveQueue → localQueue → System::handleCompleteMessage() → sendQueue → Network
+         (ServerSocket)  (direct copy)       (HandlerDispatcher)         (ServerSocket)
 ```
 
 ### **🎭 Component Roles**
-- **System**: Coordinator, configuration, API interface (NOT a courier!)
+- **System**: Coordinator, configuration, HandlerDispatcher management
 - **ServerSocket**: Network I/O, connection management, exposes queues and synchronization primitives
-- **MessageProcessor**: Message assembly, handler dispatch, DIRECT communication with ServerSocket
+- **MessageProcessor**: Message assembly via DIRECT ServerSocket access (no intermediate queues)
+- **HandlerDispatcher**: Centralized message routing (in System component)
 - **Handlers**: Business logic, response generation
-- **CommandHandler**: Special role in system shutdown (using detached threads)
 
-### **🚀 Direct Communication (NO Couriers!)**
+### **🚀 Direct Communication Pattern**
 ```
 ┌─────────────────┐                    ┌─────────────────┐
 │   ServerSocket  │◀──getReceiveQueue()─│ MessageProcessor│
@@ -370,11 +365,20 @@ Network → receiveQueue → inputQueue → Handler → sendQueue → Network
 │ receiveQueue    │◀──getReceiveCondition()│              │
 │ sendQueue       │◀──sendMessage()────│                 │
 └─────────────────┘                    └─────────────────┘
+                                               │
+                                               ▼
+                                      ┌─────────────────┐
+                                      │     System      │
+                                      │                 │
+                                      │ HandlerDispatcher│
+                                      │ handleCompleteMessage()│
+                                      └─────────────────┘
 
 ✅ MessageProcessor directly accesses ServerSocket queues and synchronization
-✅ Event-driven with condition variables and predicates
-✅ No busy waiting, no polling, efficient thread wakeup
-❌ NO System courier, NO callback-based message transfer
+✅ Event-driven with condition variables and predicates  
+✅ NO intermediate inputQueue/inputMutex complexity
+✅ Efficient: minimal lock time, process outside locks
+✅ HandlerDispatcher in System for better separation of concerns
 ```
 
 ### **🛡️ Robust Shutdown Sequence**

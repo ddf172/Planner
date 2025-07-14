@@ -33,17 +33,21 @@ void MessageProcessor::stop() {
     
     running.store(false);
     
-    inputCondition.notify_all();
-    
+    // If ServerSocket is set, notify ReceiveCondition to wake up any waiting threads
+    // and allow message processing to finish
     if (serverSocket) {
         serverSocket->getReceiveCondition().notify_all();
     }
     
     if (processingThread.joinable()) {
+        // Avoid deadlock by checking if the current thread is the processing thread
+        // If so, detach it to prevent joining from itself
         if (std::this_thread::get_id() == processingThread.get_id()) {
             std::cout << "WARNING: Trying to join processing thread from itself - skipping join" << std::endl;
             processingThread.detach();
-        } else {
+        }
+        // Otherwise, join the thread to ensure it finishes
+        else {
             std::cout << "Joining processing thread..." << std::endl;
             try {
                 processingThread.join();
@@ -98,85 +102,59 @@ void MessageProcessor::processLoop()
         }
         
         std::vector<MessageFrame> localQueue;
-        {
-            // Lock the local queue to prepare for message processing.
-            std::unique_lock<std::mutex> lock(inputMutex);
+        
+        // Handle case when serverSocket is not set
+        if (!serverSocket) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            if (!running) {
+                std::cout << "MessageProcessor: processLoop stopping (no serverSocket)" << std::endl;
+                return;
+            }
+            continue;
+        }
+        
+        // Wait for messages from ServerSocket and transfer them to local queue
+        try {
+            std::unique_lock<std::mutex> serverLock(serverSocket->getReceiveMutex());
+            
+            if (!running) {
+                std::cout << "MessageProcessor: processLoop stopping (before wait)" << std::endl;
+                return;
+            }
 
-            if (inputQueue.empty())
-            {
-                if (!serverSocket) {
-
-                    inputCondition.wait_for(lock, std::chrono::milliseconds(100), 
-                        [this] { return !inputQueue.empty() || !running; });
-                    
-                    if (!running) {
-                        std::cout << "MessageProcessor: processLoop stopping (no serverSocket)" << std::endl;
-                        return;
-                    }
-                    continue;
-                }
+            // Wait for messages or shutdown signal
+            serverSocket->getReceiveCondition().wait_for(serverLock, 
+                std::chrono::milliseconds(100), [this] {
+                if (!running || !serverSocket) return true;
                 
-                try {
-                    std::unique_lock<std::mutex> serverLock(serverSocket->getReceiveMutex());
-                    
-                    if (!running) {
-                        std::cout << "MessageProcessor: processLoop stopping (before wait)" << std::endl;
-                        return;
-                    }
+                // Wait until the server's receive queue is not empty OR the processor is stopped.
+                return !serverSocket->getReceiveQueue().empty();
+            });
 
-                    serverSocket->getReceiveCondition().wait_for(serverLock, 
-                        std::chrono::milliseconds(100), [this] {
-                        if (!running || !serverSocket) return true;
-                        
-                        // Wait until the server's receive queue is not empty OR the processor is stopped.
-                        return !serverSocket->getReceiveQueue().empty();
-                    });
-
-                    // If the loop was woken up to stop, exit gracefully.
-                    if (!running || !serverSocket)
-                    {
-                        std::cout << "MessageProcessor: processLoop stopping (after wait)" << std::endl;
-                        return;
-                    }
-                } catch (const std::exception& e) {
-                    std::cerr << "Exception in processLoop wait: " << e.what() << std::endl;
-                    
-                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-                    if (!running) {
-                        return;
-                    }
-                    continue;
-                }
-
-                // At this point, we hold the lock and the server queue is not empty.
-                // Transfer all messages from the server's queue to our local queue.
-                try {
-                    if (!running) {
-                        std::cout << "MessageProcessor: processLoop stopping (before transfer)" << std::endl;
-                        return;
-                    }
-                    
-                    if (serverSocket) {
-                        while (!serverSocket->getReceiveQueue().empty() && running)
-                        {
-                            inputQueue.push(serverSocket->getReceiveQueue().front());
-                            serverSocket->getReceiveQueue().pop();
-                        }
-                    }
-                } catch (const std::exception& e) {
-                    std::cerr << "Exception transferring messages: " << e.what() << std::endl;
-                }
-            }
-
-            // Move all messages to a local queue to minimize lock time.
-            while (!inputQueue.empty())
+            // If the loop was woken up to stop, exit gracefully.
+            if (!running || !serverSocket)
             {
-                localQueue.push_back(inputQueue.front());
-                inputQueue.pop();
+                std::cout << "MessageProcessor: processLoop stopping (after wait)" << std::endl;
+                return;
             }
-        } // Release inputMutex
+            
+            while (!serverSocket->getReceiveQueue().empty() && running)
+            {
+                localQueue.push_back(serverSocket->getReceiveQueue().front());
+                serverSocket->getReceiveQueue().pop();
+            }
+            
+        } catch (const std::exception& e) {
+            std::cerr << "Exception in processLoop: " << e.what() << std::endl;
+            
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            if (!running) {
+                return;
+            }
+            continue;
+        }
 
-        // Process messages outside of the lock.
+        // Process messages outside of any locks
         if (!localQueue.empty())
         {
             for (const auto& frame : localQueue)
