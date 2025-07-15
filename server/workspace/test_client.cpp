@@ -290,8 +290,8 @@ int main() {
     
     printSeparator("ERROR HANDLING TESTS");
     
-    // Test 7: Error handling - Unknown command
-    printTestHeader(7, "ERROR handling - Unknown command");
+    // Test 8: Error handling - Unknown command
+    printTestHeader(8, "ERROR handling - Unknown command");
     {
         json badCmd = {{"command", "invalid_command_test"}};
         MessageFrame frame = createTestMessage(badCmd.dump(), MessageType::Command, "cmd-error-001");
@@ -302,8 +302,8 @@ int main() {
     
     std::this_thread::sleep_for(std::chrono::milliseconds(300));
     
-    // Test 8: Error handling - Unknown debug command
-    printTestHeader(8, "ERROR handling - Unknown debug command");
+    // Test 9: Error handling - Unknown debug command
+    printTestHeader(9, "ERROR handling - Unknown debug command");
     {
         json badDebug = {{"debug", "invalid_debug_command"}};
         MessageFrame frame = createTestMessage(badDebug.dump(), MessageType::Debug, "debug-error-001");
@@ -314,8 +314,8 @@ int main() {
     
     std::this_thread::sleep_for(std::chrono::milliseconds(300));
     
-    // Test 9: Error handling - Malformed command (missing command field)
-    printTestHeader(9, "ERROR handling - Malformed command");
+    // Test 10: Error handling - Malformed command (missing command field)
+    printTestHeader(10, "ERROR handling - Malformed command");
     {
         json malformedCmd = {{"invalid_field", "test"}};
         MessageFrame frame = createTestMessage(malformedCmd.dump(), MessageType::Command, "cmd-malformed-001");
@@ -324,16 +324,94 @@ int main() {
         }
     }
     
-    printSeparator("ALL TESTS COMPLETED");
-    std::cout << "\n✓ All protocol tests have been executed." << std::endl;
-    std::cout << "✓ Check server console output for debug print_payload results." << std::endl;
-    std::cout << "✓ All responses should show proper acknowledgments and error codes." << std::endl;
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
     
-    std::cout << "\nPress Enter to test STOP command (this will shutdown the server)..." << std::endl;
-    std::cin.get();
+    // Test 10: Fragmented message test
+    printTestHeader(10, "FRAGMENTED message test");
+    {
+        // Create a large JSON payload that will be split into fragments
+        json largeDataMsg = {
+            {"type", "large_fragmented_test"},
+            {"data", {
+                {"message", "This is a test of the message fragmentation system. This payload is intentionally large to test the reassembly functionality."},
+                {"fragments_info", "This message should be split into multiple fragments and reassembled by the server"},
+                {"test_data", {
+                    {"chunk_1", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."},
+                    {"chunk_2", "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."},
+                    {"chunk_3", "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur."},
+                    {"chunk_4", "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."},
+                    {"chunk_5", "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium."}
+                }},
+                {"metadata", {
+                    {"purpose", "Test message fragmentation and reassembly"},
+                    {"expected_fragments", "Multiple fragments with proper sequencing"},
+                    {"reassembly_test", true}
+                }}
+            }}
+        };
+        
+        std::string payload = largeDataMsg.dump();
+        std::string messageId = "data-fragmented-001";
+        
+        // Simulate fragmentation by splitting the payload into chunks
+        const size_t maxFragmentSize = 200; // Small fragment size to force fragmentation
+        std::vector<MessageFrame> fragments;
+        
+        size_t totalSize = payload.size();
+        size_t offset = 0;
+        int sequenceNumber = 0;
+        
+        std::cout << "📦 Creating fragmented message with " << totalSize << " bytes" << std::endl;
+        
+        while (offset < totalSize) {
+            MessageFrame fragment;
+            fragment.header.messageId = messageId;
+            fragment.header.sequenceNumber = sequenceNumber;
+            fragment.header.type = MessageType::Data;
+            
+            size_t fragmentSize = std::min(maxFragmentSize, totalSize - offset);
+            fragment.payload = payload.substr(offset, fragmentSize);
+            fragment.header.payloadSize = fragment.payload.size();
+            fragment.header.isLast = (offset + fragmentSize >= totalSize);
+            
+            fragments.push_back(fragment);
+            
+            std::cout << "  Fragment " << sequenceNumber << ": " << fragmentSize << " bytes" 
+                      << (fragment.header.isLast ? " (LAST)" : "") << std::endl;
+            
+            offset += fragmentSize;
+            sequenceNumber++;
+        }
+        
+        std::cout << "📤 Sending " << fragments.size() << " fragments..." << std::endl;
+        
+        // Send all fragments
+        bool allSent = true;
+        for (const auto& fragment : fragments) {
+            if (!client.sendMessage(fragment)) {
+                std::cerr << "✗ Failed to send fragment " << fragment.header.sequenceNumber << std::endl;
+                allSent = false;
+                break;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(50)); // Small delay between fragments
+        }
+        
+        if (allSent) {
+            std::cout << "⏳ Waiting for reassembled response..." << std::endl;
+            if (!client.receiveResponse(10000)) { // Longer timeout for processing
+                std::cerr << "✗ Fragmented message test failed - no response" << std::endl;
+            } else {
+                std::cout << "✓ Fragmented message successfully reassembled and processed!" << std::endl;
+            }
+        } else {
+            std::cerr << "✗ Fragmented message test failed - sending error" << std::endl;
+        }
+    }
     
-    // Test 10: Stop command (will shutdown server)
-    printTestHeader(10, "STOP command - Server Shutdown");
+    std::this_thread::sleep_for(std::chrono::milliseconds(300));
+    
+    // Test 11: Stop command (will shutdown server)
+    printTestHeader(11, "STOP command - Server Shutdown");
     {
         json stopCmd = {{"command", "stop"}};
         MessageFrame frame = createTestMessage(stopCmd.dump(), MessageType::Command, "cmd-stop-001");
