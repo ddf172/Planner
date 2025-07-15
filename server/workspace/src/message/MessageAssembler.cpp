@@ -3,7 +3,8 @@
 #include <numeric>
 
 std::optional<std::string> MessageAssembler::addFragment(const MessageFrame& frame)
-{
+{   
+    // Add fragment to the incomplete messages map, if entry does not exist, create it
     incompleteMessages[frame.header.messageId].push_back(frame);
     if (isMessageComplete(frame.header.messageId))
     {
@@ -23,29 +24,53 @@ bool MessageAssembler::isMessageComplete(const std::string& messageId) const {
         return false;
     }
     
-    // Check if we have the last fragment
-    for (const auto& fragment : fragments) {
-        if (fragment.header.isLast) {
-            return true;
+    // Find the last sequence number and check if we have all fragments
+    int lastSequenceNumber = -1;
+    bool hasLastFragment = false;
+    
+    for (int i = fragments.size() - 1; i >= 0; --i) {
+        if (fragments[i].header.isLast) {
+            lastSequenceNumber = fragments[i].header.sequenceNumber;
+            hasLastFragment = true;
+            break;
         }
     }
     
+    // If we didn't find a last fragment, the message is incomplete
+    if (!hasLastFragment) {
+        return false;
+    }
+    
+    // Check if we have exactly the expected number of fragments
+    int expectedFragmentCount = lastSequenceNumber + 1;
+    if (static_cast<int>(fragments.size()) != expectedFragmentCount) {
+        return false;
+    }
+
     // Check for missing fragments
-    size_t totalFragments = fragments.size();
-    size_t expectedFragments = 0;
+    std::vector<bool> sequenceNumbersSeen(expectedFragmentCount, false);
     for (const auto& fragment : fragments) {
-        if (fragment.header.sequenceNumber >= static_cast<int>(expectedFragments)) {
-            expectedFragments = fragment.header.sequenceNumber + 1;
+        int seqNum = fragment.header.sequenceNumber;
+        if (seqNum >= 0 && seqNum <= lastSequenceNumber) {
+            sequenceNumbersSeen[seqNum] = true;
         }
     }
-    return totalFragments == expectedFragments;
+
+    // Check if all sequence numbers from 0 to lastSequenceNumber are present
+    for (bool seen : sequenceNumbersSeen) {
+        if (!seen) {
+            return false; // Missing fragment
+        }
+    }
+    
+    return true;
 }
 
-std::string MessageAssembler::getAssembledMessage(const std::string& messageId)
+std::optional<std::string> MessageAssembler::getAssembledMessage(const std::string& messageId)
 {
     if (!isMessageComplete(messageId))
     {
-        return "";
+        return std::nullopt;
     }
 
     auto& fragments = incompleteMessages[messageId];
@@ -65,10 +90,10 @@ std::string MessageAssembler::getAssembledMessage(const std::string& messageId)
     return completeMessage;
 }
 
-MessageType MessageAssembler::getMessageType(const std::string& messageId) const {
+std::optional<MessageType> MessageAssembler::getMessageType(const std::string& messageId) const {
     auto it = incompleteMessages.find(messageId);
     if (it == incompleteMessages.end() || it->second.empty()) {
-        return MessageType::Data; // Default
+        return std::nullopt;
     }
     
     return it->second[0].header.type;

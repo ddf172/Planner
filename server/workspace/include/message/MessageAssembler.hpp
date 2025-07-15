@@ -34,16 +34,16 @@ public:
     /**
      * @brief Gets the complete assembled message
      * @param messageId The message ID
-     * @return The complete assembled payload
+     * @return Optional containing the complete assembled payload, or std::nullopt if message not complete
      */
-    std::string getAssembledMessage(const std::string& messageId);
+    std::optional<std::string> getAssembledMessage(const std::string& messageId);
     
     /**
      * @brief Gets the message type of completed message
      * @param messageId The message ID
-     * @return The message type
+     * @return Optional containing the message type, or std::nullopt if message not found
      */
-    MessageType getMessageType(const std::string& messageId) const;
+    std::optional<MessageType> getMessageType(const std::string& messageId) const;
     
     /**
      * @brief Cleans up message fragments after processing

@@ -165,14 +165,19 @@ void MessageProcessor::processLoop()
                 {
                     // Message is complete, process it
                     std::string messageId = messageIdOpt.value();
-                    std::string payload = assembler.getAssembledMessage(messageId);
-                    MessageType type = assembler.getMessageType(messageId);
                     
-                    // Dispatch the complete message
-                    handleCompleteMessage(messageId, payload, type);
+                    auto payloadOpt = assembler.getAssembledMessage(messageId);
+                    auto typeOpt = assembler.getMessageType(messageId);
                     
-                    // Cleanup assembled fragments
-                    assembler.cleanup(messageId);
+                    if (payloadOpt && typeOpt) {
+                        // Dispatch the complete message
+                        handleCompleteMessage(messageId, payloadOpt.value(), typeOpt.value());
+                        
+                        // Cleanup assembled fragments
+                        assembler.cleanup(messageId);
+                    } else {
+                        std::cerr << "Error: Could not get assembled message or type for " << messageId << std::endl;
+                    }
                 }
             }
         }
@@ -180,18 +185,25 @@ void MessageProcessor::processLoop()
 }
 
 void MessageProcessor::handleInputMessage(const MessageFrame& frame) {
+    // Debug log for processing
     std::cout << "MessageProcessor: Processing fragment " << frame.header.messageId 
               << " [" << frame.header.sequenceNumber << "]" << std::endl;
     
     auto messageIdOpt = assembler.addFragment(frame);
     
+    // If the message is complete addFragment returns a valid messageId, nullopt otherwise
     if (messageIdOpt) {
         std::string messageId = messageIdOpt.value();
-        std::string payload = assembler.getAssembledMessage(messageId);
-        MessageType type = assembler.getMessageType(messageId);
         
-        handleCompleteMessage(messageId, payload, type);
-        assembler.cleanup(messageId);
+        auto payloadOpt = assembler.getAssembledMessage(messageId);
+        auto typeOpt = assembler.getMessageType(messageId);
+        
+        if (payloadOpt && typeOpt) {
+            handleCompleteMessage(messageId, payloadOpt.value(), typeOpt.value());
+            assembler.cleanup(messageId);
+        } else {
+            std::cerr << "Error: Could not get assembled message or type for " << messageId << std::endl;
+        }
     }
 }
 
