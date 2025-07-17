@@ -70,9 +70,6 @@ void DebugHandler::handlePrintPayload(const std::string& messageId, const json& 
 }
 
 void DebugHandler::handleUptime(const std::string& messageId, const json& debugData, System& system) {
-    // For now, we'll show a simple uptime message
-    // In future, you can implement actual uptime tracking
-    
     std::cout << "=== DEBUG: SERVER UPTIME ===" << std::endl;
     std::cout << "Server uptime: [Not implemented yet]" << std::endl;
     std::cout << "Current time: " << std::time(nullptr) << std::endl;
@@ -82,7 +79,7 @@ void DebugHandler::handleUptime(const std::string& messageId, const json& debugD
         {"status", "success"},
         {"debug", "uptime"},
         {"message", "Uptime info printed to server console"},
-        {"current_timestamp", std::time(nullptr)},
+        {"current_timestamp", std::time(nullptr)}, // to be implemented
         {"uptime_seconds", "not_implemented"}
     };
     

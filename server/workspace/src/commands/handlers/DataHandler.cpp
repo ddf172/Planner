@@ -8,7 +8,6 @@ using json = nlohmann::json;
 
 void DataHandler::handle(const std::string& messageId, const std::string& payload, System& system) {
     std::cout << "DataHandler: Received message " << messageId << std::endl;
-    std::cout << "Payload: " << payload << std::endl;
     
     // Send acknowledgment that data was received
     json ackResponse = {
