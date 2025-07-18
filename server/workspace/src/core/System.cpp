@@ -83,6 +83,7 @@ void System::registerHandler(std::unique_ptr<IMessageHandler> handler) {
         return;
     }
     
+    // Register handler with dispatcher, assign type to handler
     MessageType type = handler->getHandledType();
     dispatcher.registerHandler(type, handler.get());
     handlers.push_back(std::move(handler));
@@ -104,9 +105,9 @@ bool System::sendMessage(const std::string& payload, MessageType type) {
     return true;
 }
 
-bool System::sendResponse(const std::string& messageId, const std::string& payload, MessageType type) {
+bool System::sendMessage(const std::string& messageId, const std::string& payload, MessageType type) {
     if (!isClientConnected()) {
-        std::cerr << "Cannot send response: no client connected" << std::endl;
+        std::cerr << "Cannot send message: no client connected" << std::endl;
         return false;
     }
     

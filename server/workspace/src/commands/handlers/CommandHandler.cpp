@@ -32,7 +32,7 @@ void CommandHandler::handle(const std::string& messageId, const std::string& pay
                     {"error_code", "UNKNOWN_COMMAND"},
                     {"available_commands", {"stop", "status", "ping"}}
                 };
-                system.sendResponse(messageId, response.dump(), MessageType::Command);
+                system.sendMessage(messageId, response.dump(), MessageType::Command);
             }
         } else {
             json response = {
@@ -40,7 +40,7 @@ void CommandHandler::handle(const std::string& messageId, const std::string& pay
                 {"message", "No 'command' field found in payload"},
                 {"error_code", "MISSING_COMMAND_FIELD"}
             };
-            system.sendResponse(messageId, response.dump(), MessageType::Command);
+            system.sendMessage(messageId, response.dump(), MessageType::Command);
         }
         
     } catch (const std::exception& e) {
@@ -50,7 +50,7 @@ void CommandHandler::handle(const std::string& messageId, const std::string& pay
             {"message", "Invalid JSON format"},
             {"error_code", "INVALID_JSON"}
         };
-        system.sendResponse(messageId, response.dump(), MessageType::Command);
+        system.sendMessage(messageId, response.dump(), MessageType::Command);
     }
 }
 
@@ -69,7 +69,7 @@ void CommandHandler::handleStopCommand(const std::string& messageId, const json&
     
     // Send response before stopping the system
     try {
-        system.sendResponse(messageId, response.dump(), MessageType::Command);
+        system.sendMessage(messageId, response.dump(), MessageType::Command);
     } catch (const std::exception& e) {
         std::cerr << "Error sending stop response: " << e.what() << std::endl;
     }
@@ -112,7 +112,7 @@ void CommandHandler::handleStatusCommand(const std::string& messageId, const jso
         }}
     };
     
-    system.sendResponse(messageId, response.dump(), MessageType::Command);
+    system.sendMessage(messageId, response.dump(), MessageType::Command);
 }
 
 void CommandHandler::handlePingCommand(const std::string& messageId, const json& commandData, System& system) {
@@ -125,5 +125,5 @@ void CommandHandler::handlePingCommand(const std::string& messageId, const json&
         {"timestamp", std::time(nullptr)}
     };
     
-    system.sendResponse(messageId, response.dump(), MessageType::Command);
+    system.sendMessage(messageId, response.dump(), MessageType::Command);
 }

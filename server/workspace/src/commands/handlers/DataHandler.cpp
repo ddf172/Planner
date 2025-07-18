@@ -17,7 +17,7 @@ void DataHandler::handle(const std::string& messageId, const std::string& payloa
         {"timestamp", std::time(nullptr)}
     };
     
-    system.sendResponse(messageId, ackResponse.dump(), MessageType::Data);
+    system.sendMessage(messageId, ackResponse.dump(), MessageType::Data);
 }
 
 MessageType DataHandler::getHandledType() const {

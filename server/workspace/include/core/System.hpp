@@ -58,13 +58,13 @@ public:
     bool sendMessage(const std::string& payload, MessageType type);
     
     /**
-     * @brief Sends a response message to the client
-     * @param messageId Original message ID (for correlation)
-     * @param payload Response payload
+     * @brief Sends a message to the client with correlation ID
+     * @param messageId Message ID for correlation (e.g., response to original message)
+     * @param payload Message payload
      * @param type Message type
      * @return true if message was queued for sending
      */
-    bool sendResponse(const std::string& messageId, const std::string& payload, MessageType type);
+    bool sendMessage(const std::string& messageId, const std::string& payload, MessageType type);
     
     /**
      * @brief Checks if system is running

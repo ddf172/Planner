@@ -31,7 +31,7 @@ void DebugHandler::handle(const std::string& messageId, const std::string& paylo
                     {"error_code", "UNKNOWN_DEBUG_COMMAND"},
                     {"available_commands", {"print_payload", "uptime", "server_info"}}
                 };
-                system.sendResponse(messageId, response.dump(), MessageType::Debug);
+                system.sendMessage(messageId, response.dump(), MessageType::Debug);
             }
         } else {
             json response = {
@@ -39,7 +39,7 @@ void DebugHandler::handle(const std::string& messageId, const std::string& paylo
                 {"message", "No 'debug' field found in payload"},
                 {"error_code", "MISSING_DEBUG_FIELD"}
             };
-            system.sendResponse(messageId, response.dump(), MessageType::Debug);
+            system.sendMessage(messageId, response.dump(), MessageType::Debug);
         }
         
     } catch (const std::exception& e) {
@@ -49,7 +49,7 @@ void DebugHandler::handle(const std::string& messageId, const std::string& paylo
             {"message", "Invalid JSON format"},
             {"error_code", "INVALID_JSON"}
         };
-        system.sendResponse(messageId, response.dump(), MessageType::Debug);
+        system.sendMessage(messageId, response.dump(), MessageType::Debug);
     }
 }
 
@@ -66,7 +66,7 @@ void DebugHandler::handlePrintPayload(const std::string& messageId, const json& 
         {"timestamp", std::time(nullptr)}
     };
     
-    system.sendResponse(messageId, response.dump(), MessageType::Debug);
+    system.sendMessage(messageId, response.dump(), MessageType::Debug);
 }
 
 void DebugHandler::handleUptime(const std::string& messageId, const json& debugData, System& system) {
@@ -83,7 +83,7 @@ void DebugHandler::handleUptime(const std::string& messageId, const json& debugD
         {"uptime_seconds", "not_implemented"}
     };
     
-    system.sendResponse(messageId, response.dump(), MessageType::Debug);
+    system.sendMessage(messageId, response.dump(), MessageType::Debug);
 }
 
 void DebugHandler::handleServerInfo(const std::string& messageId, const json& debugData, System& system) {
@@ -103,7 +103,7 @@ void DebugHandler::handleServerInfo(const std::string& messageId, const json& de
         }}
     };
     
-    system.sendResponse(messageId, response.dump(), MessageType::Debug);
+    system.sendMessage(messageId, response.dump(), MessageType::Debug);
 }
 
 MessageType DebugHandler::getHandledType() const {
