@@ -10,12 +10,6 @@ A robust C++ server-based scheduling system with algorithm flexibility and compr
 - **[Algorithm Architecture](./server/workspace/markdowns/ALGORITHM_ARCHITECTURE.md)** - Detailed algorithm module design
 - **[Communication Protocol](./server/workspace/markdowns/Communictaion.md)** - Message handling specification
 
-### Key Classes & Diagrams
-- **[System](https://ddf172.github.io/Planner/classSystem.html)** - Central component container
-- **[AlgorithmRunner](https://ddf172.github.io/Planner/classAlgorithmRunner.html)** - Algorithm execution engine
-- **[MessageProcessor](https://ddf172.github.io/Planner/classMessageProcessor.html)** - Message handling system
-- **[HandlerDispatcher](https://ddf172.github.io/Planner/classHandlerDispatcher.html)** - Message routing
-
 ## 🚀 Quick Start
 
 ### Build & Run

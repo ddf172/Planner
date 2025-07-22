@@ -4,7 +4,6 @@ var searchData=
   ['addfragment_1',['addFragment',['../classMessageAssembler.html#adb296b82ae93e90c88d3bc360c3b7ab0',1,'MessageAssembler']]],
   ['algorithmhandler_2',['AlgorithmHandler',['../classAlgorithmHandler.html',1,'']]],
   ['algorithminfo_3',['AlgorithmInfo',['../structAlgorithmInfo.html',1,'']]],
-  ['algorithmmanager_4',['AlgorithmManager',['../classAlgorithmManager.html',1,'']]],
-  ['algorithmrunner_5',['AlgorithmRunner',['../classAlgorithmRunner.html',1,'']]],
-  ['algorithmscanner_6',['AlgorithmScanner',['../classAlgorithmScanner.html',1,'']]]
+  ['algorithmrunner_4',['AlgorithmRunner',['../classAlgorithmRunner.html',1,'']]],
+  ['algorithmscanner_5',['AlgorithmScanner',['../classAlgorithmScanner.html',1,'']]]
 ];
