@@ -10,6 +10,7 @@ enum class MessageType {
     Data,
     Command,
     Debug,
+    Algorithm,
     // Add more types as needed
 };
 
@@ -17,6 +18,7 @@ NLOHMANN_JSON_SERIALIZE_ENUM(MessageType, {
     {MessageType::Data, "Data"},
     {MessageType::Command, "Command"},
     {MessageType::Debug, "Debug"},
+    {MessageType::Algorithm, "Algorithm"},
 })
 
 struct MessageHeader {

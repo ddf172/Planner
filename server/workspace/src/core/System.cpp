@@ -150,3 +150,11 @@ void System::onClientDisconnected() {
 void System::handleCompleteMessage(const std::string& messageId, const std::string& payload, MessageType type) {
     dispatcher.dispatch(messageId, payload, type, *this);
 }
+
+AlgorithmScanner& System::getAlgorithmScanner() {
+    return algorithmScanner;
+}
+
+AlgorithmRunner& System::getAlgorithmRunner() {
+    return algorithmRunner;
+}

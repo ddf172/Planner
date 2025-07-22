@@ -1,0 +1,18 @@
+{
+    "name": "simple_test",
+    "displayName": "Simple Test Algorithm",
+    "version": "1.0",
+    "description": "A simple test algorithm that demonstrates the interface",
+    "author": "System Team",
+    "type": "test",
+    "supportsProgress": true,
+    "parameters": {
+        "delay": {
+            "type": "int",
+            "default": 5,
+            "min": 1,
+            "max": 30,
+            "description": "Delay in seconds to simulate algorithm execution"
+        }
+    }
+}

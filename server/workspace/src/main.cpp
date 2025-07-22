@@ -6,6 +6,7 @@
 #include "control/handlers/DataHandler.hpp"
 #include "control/handlers/DebugHandler.hpp"
 #include "control/handlers/CommandHandler.hpp"
+#include "control/handlers/AlgorithmHandler.hpp"
 
 int main() {
     System system(8080);  // Podajemy port
@@ -15,6 +16,7 @@ int main() {
     system.registerHandler(std::make_unique<DataHandler>());
     system.registerHandler(std::make_unique<DebugHandler>());
     system.registerHandler(std::make_unique<CommandHandler>());
+    system.registerHandler(std::make_unique<AlgorithmHandler>());
     
     system.start();
     

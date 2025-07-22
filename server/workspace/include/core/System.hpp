@@ -9,12 +9,16 @@
 #include "message/MessageProcessor.hpp"
 #include "control/IMessageHandler.hpp"
 #include "control/HandlerDispatcher.hpp"
+#include "algorithm/AlgorithmScanner.hpp"
+#include "algorithm/AlgorithmRunner.hpp"
 
 class System {
 private:
     ServerSocket serverSocket;
     MessageProcessor messageProcessor;
     HandlerDispatcher dispatcher;
+    AlgorithmScanner algorithmScanner;
+    AlgorithmRunner algorithmRunner;
     
     std::vector<std::unique_ptr<IMessageHandler>> handlers;
     std::atomic<bool> running;
@@ -90,4 +94,17 @@ public:
      * @param type Message type
      */
     void handleCompleteMessage(const std::string& messageId, const std::string& payload, MessageType type);
+    
+    // Component access methods
+    /**
+     * @brief Gets the algorithm scanner
+     * @return Reference to algorithm scanner
+     */
+    AlgorithmScanner& getAlgorithmScanner();
+    
+    /**
+     * @brief Gets the algorithm runner
+     * @return Reference to algorithm runner
+     */
+    AlgorithmRunner& getAlgorithmRunner();
 };
