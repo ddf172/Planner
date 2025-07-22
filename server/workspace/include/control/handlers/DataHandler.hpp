@@ -1,6 +1,6 @@
 #pragma once
 
-#include "commands/IMessageHandler.hpp"
+#include "control/IMessageHandler.hpp"
 
 class DataHandler : public IMessageHandler {
 public:

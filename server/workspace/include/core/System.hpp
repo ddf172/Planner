@@ -7,8 +7,8 @@
 #include <chrono>
 #include "network/ServerSocket.hpp"
 #include "message/MessageProcessor.hpp"
-#include "commands/IMessageHandler.hpp"
-#include "commands/HandlerDispatcher.hpp"
+#include "control/IMessageHandler.hpp"
+#include "control/HandlerDispatcher.hpp"
 
 class System {
 private:

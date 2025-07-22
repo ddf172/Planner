@@ -3,9 +3,9 @@
 #include <thread>
 #include <chrono>
 #include "core/System.hpp"
-#include "commands/handlers/DataHandler.hpp"
-#include "commands/handlers/DebugHandler.hpp"
-#include "commands/handlers/CommandHandler.hpp"
+#include "control/handlers/DataHandler.hpp"
+#include "control/handlers/DebugHandler.hpp"
+#include "control/handlers/CommandHandler.hpp"
 
 int main() {
     System system(8080);  // Podajemy port

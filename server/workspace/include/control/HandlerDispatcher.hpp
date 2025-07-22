@@ -2,7 +2,7 @@
 
 #include <map>
 #include <memory>
-#include "commands/IMessageHandler.hpp"
+#include "control/IMessageHandler.hpp"
 #include "message/MessageFrame.hpp"
 
 // Forward declaration

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "commands/IMessageHandler.hpp"
+#include "control/IMessageHandler.hpp"
 #include "extern/nlohmann/json.hpp"
 
 using json = nlohmann::json;

@@ -1,4 +1,4 @@
-#include "commands/handlers/DebugHandler.hpp"
+#include "control/handlers/DebugHandler.hpp"
 #include "core/System.hpp"
 #include "extern/nlohmann/json.hpp"
 #include <iostream>
