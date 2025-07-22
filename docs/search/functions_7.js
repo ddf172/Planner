@@ -1,0 +1,4 @@
+var searchData=
+[
+  ['printstats_89',['printStats',['../classSystem.html#a68d448ba8c6398a6392756cd6ae1a927',1,'System']]]
+];
