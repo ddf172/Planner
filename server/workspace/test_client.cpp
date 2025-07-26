@@ -211,7 +211,7 @@ int main() {
     printTestHeader(3, "DEBUG print_payload command");
     {
         json debugCmd = {
-            {"debug", "print_payload"},
+            {"command", "print_payload"},
             {"test_data", {
                 {"user", "test_client"},
                 {"action", "protocol_verification"},
@@ -233,7 +233,7 @@ int main() {
     // Test 4: Debug - Server Info
     printTestHeader(4, "DEBUG server_info command");
     {
-        json debugCmd = {{"debug", "server_info"}};
+        json debugCmd = {{"command", "server_info"}};
         MessageFrame frame = createTestMessage(debugCmd.dump(), MessageType::Debug, "debug-info-001");
         if (!client.sendAndWaitForResponse(frame)) {
             std::cerr << "✗ Debug server_info test failed" << std::endl;
@@ -245,7 +245,7 @@ int main() {
     // Test 5: Debug - Uptime
     printTestHeader(5, "DEBUG uptime command");
     {
-        json debugCmd = {{"debug", "uptime"}};
+        json debugCmd = {{"command", "uptime"}};
         MessageFrame frame = createTestMessage(debugCmd.dump(), MessageType::Debug, "debug-uptime-001");
         if (!client.sendAndWaitForResponse(frame)) {
             std::cerr << "✗ Debug uptime test failed" << std::endl;
@@ -305,7 +305,7 @@ int main() {
     // Test 9: Error handling - Unknown debug command
     printTestHeader(9, "ERROR handling - Unknown debug command");
     {
-        json badDebug = {{"debug", "invalid_debug_command"}};
+        json badDebug = {{"command", "invalid_debug_command"}};
         MessageFrame frame = createTestMessage(badDebug.dump(), MessageType::Debug, "debug-error-001");
         if (!client.sendAndWaitForResponse(frame)) {
             std::cerr << "✗ Debug error handling test failed" << std::endl;

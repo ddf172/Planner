@@ -8,8 +8,8 @@ void AlgorithmHandler::handle(const std::string& messageId, const std::string& p
     try {
         json algorithmData = json::parse(payload);
         
-        if (algorithmData.contains("algorithm")) {
-            std::string algorithmCmd = algorithmData["algorithm"];
+        if (algorithmData.contains("command")) {
+            std::string algorithmCmd = algorithmData["command"];
             
             if (algorithmCmd == "list") {
                 handleList(messageId, system);
@@ -31,8 +31,8 @@ void AlgorithmHandler::handle(const std::string& messageId, const std::string& p
         } else {
             json response = {
                 {"status", "error"},
-                {"message", "No 'algorithm' field found in payload"},
-                {"error_code", "MISSING_ALGORITHM_FIELD"}
+                {"message", "No 'command' field found in payload"},
+                {"error_code", "MISSING_COMMAND_FIELD"}
             };
             system.sendMessage(messageId, response.dump(), MessageType::Algorithm);
         }

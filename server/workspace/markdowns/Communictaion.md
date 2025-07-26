@@ -2,13 +2,15 @@
 
 ## Overview
 
-This document describes the standardized communication protocol used by the server system. The server uses a message-based architecture with three main message types: Command, Data, and Debug.
+This document describes the standardized communication protocol used by the server system. The server uses a message-based architecture with four main message types: Command, Data, Debug, and Algorithm.
 
-## Message Structure
+All message types use a standardized command structure with a `"command"` field to specify the action to perform.
+
+## Core Message Structure
 
 ### MessageFrame
 
-All communication is wrapped in a `MessageFrame` structure:
+All communication is wrapped in a `MessageFrame` structure that provides metadata and contains the actual message payload:
 
 ```json
 {
@@ -17,7 +19,7 @@ All communication is wrapped in a `MessageFrame` structure:
     "sequenceNumber": 0,
     "isLast": true,
     "payloadSize": 123,
-    "type": "Command|Data|Debug"
+    "type": "Command|Data|Debug|Algorithm"
   },
   "payload": "JSON string containing the actual message data"
 }
@@ -26,19 +28,18 @@ All communication is wrapped in a `MessageFrame` structure:
 ### Header Fields
 
 - **messageId**: Unique identifier for the message (UUID or random string)
-- **sequenceNumber**: Fragment number for large messages (0 for single fragment)
+- **sequenceNumber**: Fragment number for large messages (0 for single fragment)  
 - **isLast**: Boolean indicating if this is the last fragment
 - **payloadSize**: Size of the payload in bytes
-- **type**: Message type enum ("Command", "Data", or "Debug")
+- **type**: Message type enum ("Command", "Data", "Debug", or "Algorithm")
 
-## Message Types
+## Message Types Documentation
 
 ### 1. Command Messages
 
-Commands are used to trigger specific actions on the server.
+**Purpose**: Commands are used to trigger specific system actions and control server behavior.
 
-#### Request Format
-
+**Request Structure**:
 ```json
 {
   "command": "command_name",
@@ -49,8 +50,7 @@ Commands are used to trigger specific actions on the server.
 }
 ```
 
-#### Response Format - Success
-
+**Success Response Structure**:
 ```json
 {
   "status": "success",
@@ -63,8 +63,7 @@ Commands are used to trigger specific actions on the server.
 }
 ```
 
-#### Response Format - Error
-
+**Error Response Structure**:
 ```json
 {
   "status": "error",
@@ -75,43 +74,18 @@ Commands are used to trigger specific actions on the server.
 }
 ```
 
-#### Available Commands
-
+**Available Commands**:
 | Command | Description | Parameters | Response Data |
 |---------|-------------|------------|---------------|
 | `ping` | Ping-pong test | none | `message`: "pong" |
 | `status` | Get server status | none | `server_running`, `client_connected`, `uptime` |
 | `stop` | Shutdown server | none | `message`: shutdown confirmation |
 
-#### Command Examples
-
-**Ping Command:**
-```json
-{
-  "command": "ping"
-}
-```
-
-**Status Command:**
-```json
-{
-  "command": "status"
-}
-```
-
-**Stop Command:**
-```json
-{
-  "command": "stop"
-}
-```
-
 ### 2. Data Messages
 
-Data messages are used to send application-specific data to the server.
+**Purpose**: Data messages are used to send application-specific data to the server for processing or storage.
 
-#### Request Format
-
+**Request Structure**:
 ```json
 {
   "type": "data_type",
@@ -125,10 +99,7 @@ Data messages are used to send application-specific data to the server.
 }
 ```
 
-#### Response Format
-
-Data messages now send acknowledgment responses:
-
+**Response Structure**:
 ```json
 {
   "status": "success",
@@ -138,64 +109,26 @@ Data messages now send acknowledgment responses:
 }
 ```
 
-#### Data Examples
-
-**User Data:**
-```json
-{
-  "type": "user_info",
-  "data": {
-    "name": "John Doe",
-    "age": 30,
-    "city": "Warsaw"
-  },
-  "metadata": {
-    "source": "web_client",
-    "timestamp": "2025-01-10T12:00:00Z"
-  }
-}
-```
-
-**Sensor Data:**
-```json
-{
-  "type": "sensor_reading",
-  "data": {
-    "sensor_id": "temp_01",
-    "value": 23.5,
-    "unit": "celsius"
-  },
-  "metadata": {
-    "source": "iot_device",
-    "timestamp": "2025-01-10T12:00:00Z"
-  }
-}
-```
-
 ### 3. Debug Messages
 
-Debug messages are used for server diagnostics and testing purposes.
+**Purpose**: Debug messages are used for server diagnostics, testing, and development purposes.
 
-#### Request Format
-
+**Request Structure**:
 ```json
 {
-  "debug": "debug_command",
+  "command": "debug_command",
   "parameters": {
     "param1": "value1"
   }
 }
 ```
 
-#### Response Format
-
-Debug messages send acknowledgment responses and perform diagnostic actions:
-
+**Response Structure**:
 ```json
 {
   "status": "success",
-  "debug": "debug_command",
-  "message": "Debug action completed", 
+  "command": "debug_command",
+  "message": "Debug action completed",
   "data": {
     // Command-specific debug data
   },
@@ -203,61 +136,52 @@ Debug messages send acknowledgment responses and perform diagnostic actions:
 }
 ```
 
-#### Available Debug Commands
-
+**Available Debug Commands**:
 | Command | Description | Console Output | Response Data |
 |---------|-------------|----------------|---------------|
 | `print_payload` | Print full payload to server console | Full JSON payload with formatting | confirmation message |
 | `uptime` | Show server uptime | Uptime info and timestamps | `current_timestamp`, `uptime_seconds` |
 | `server_info` | Display server status | Running status, connections | `server_running`, `client_connected` |
 
-#### Debug Examples
+### 4. Algorithm Messages
 
-**Print Payload:**
+**Purpose**: Algorithm messages are used for algorithm management and execution within the server system.
+
+**Request Structure**:
 ```json
 {
-  "debug": "print_payload",
-  "test_data": {"key": "value"}
-}
-```
-
-**Server Uptime:**
-```json
-{
-  "debug": "uptime"
-}
-```
-
-**Server Info:**
-```json
-{
-  "debug": "server_info"
-}
-```
-
-#### Debug Examples
-
-**Print Payload Example:**
-```json
-{
-  "debug": "print_payload",
-  "test_data": {
-    "user_id": "12345",
-    "action": "login"
+  "command": "algorithm_command",
+  "name": "algorithm_name",
+  "data": {
+    "input_data": "..."
+  },
+  "config": {
+    "parameter1": "value1"
   }
 }
 ```
 
-**Server Info Example:**
+**Available Commands**:
+- **list**: Get list of available algorithms
+- **run**: Execute an algorithm with provided data
+- **stop**: Stop currently running algorithm
+- **status**: Get current algorithm status and progress
+
+**Response Structure**:
 ```json
 {
-  "debug": "server_info"
+  "status": "success|error",
+  "command": "algorithm_command",
+  "message": "Operation result description",
+  "data": {
+    "algorithm_specific_data": "..."
+  }
 }
 ```
 
 ## Error Handling
 
-### Common Error Responses
+### Common Error Response Types
 
 #### Invalid JSON Format
 ```json
@@ -304,8 +228,8 @@ Debug messages send acknowledgment responses and perform diagnostic actions:
 ```json
 {
   "status": "error",
-  "message": "No 'debug' field found in payload",
-  "error_code": "MISSING_DEBUG_FIELD",
+  "message": "No 'command' field found in payload",
+  "error_code": "MISSING_COMMAND_FIELD",
   "timestamp": 1641234567
 }
 ```
@@ -330,7 +254,110 @@ For large messages, the system supports automatic fragmentation:
 3. The last fragment has `isLast: true`
 4. The server reassembles fragments before processing
 
-### Fragment Example
+---
+
+## Implementation Examples and Usage
+
+### Command Message Examples
+
+**Ping Command:**
+```json
+{
+  "command": "ping"
+}
+```
+
+**Status Command:**
+```json
+{
+  "command": "status"
+}
+```
+
+**Stop Command:**
+```json
+{
+  "command": "stop"
+}
+```
+
+### Data Message Examples
+
+**User Data:**
+```json
+{
+  "type": "user_info",
+  "data": {
+    "name": "John Doe",
+    "age": 30,
+    "city": "Warsaw"
+  },
+  "metadata": {
+    "source": "web_client",
+    "timestamp": "2025-01-10T12:00:00Z"
+  }
+}
+```
+
+**Sensor Data:**
+```json
+{
+  "type": "sensor_reading",
+  "data": {
+    "sensor_id": "temp_01",
+    "value": 23.5,
+    "unit": "celsius"
+  },
+  "metadata": {
+    "source": "iot_device",
+    "timestamp": "2025-01-10T12:00:00Z"
+  }
+}
+```
+
+### Debug Message Examples
+
+**Print Payload:**
+```json
+{
+  "debug": "print_payload",
+  "test_data": {"key": "value"}
+}
+```
+
+**Server Uptime:**
+```json
+{
+  "debug": "uptime"
+}
+```
+
+**Server Info:**
+```json
+{
+  "debug": "server_info"
+}
+```
+
+**Print Payload Example:**
+```json
+{
+  "debug": "print_payload",
+  "test_data": {
+    "user_id": "12345",
+    "action": "login"
+  }
+}
+```
+
+**Server Info Example:**
+```json
+{
+  "debug": "server_info"
+}
+```
+
+### Fragment Examples
 
 **Fragment 1:**
 ```json
@@ -403,9 +430,9 @@ sendMessage(frame);
 ## Server Implementation Guidelines
 
 ### Adding New Commands
-1. Add command name to `handleCommandX` method in `CommandHandler`
-2. Implement command-specific logic
-3. Return standardized response format
+1. Add command name to appropriate handler method
+2. Implement command-specific logic using `"command"` field
+3. Return standardized response format with `"command"` field
 4. Update available_commands list
 5. Document in this README
 
@@ -413,10 +440,15 @@ sendMessage(frame);
 1. Add new enum value to `MessageType`
 2. Create new handler class inheriting from `IMessageHandler`
 3. Register handler in `main.cpp`
-4. Document message format in this README
+4. Use standardized `"command"` field for all actions
+5. Document message format in this README
 
 ## Version History
 
+- **v1.1.0**: Updated protocol implementation
+  - Standardized `"command"` field across all message types
+  - Added Algorithm message type
+  - Unified command structure for better consistency
 - **v1.0.0**: Initial protocol implementation
   - Basic Command, Data, and Debug message types
   - Message fragmentation support

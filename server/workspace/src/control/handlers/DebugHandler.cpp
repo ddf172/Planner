@@ -14,8 +14,8 @@ void DebugHandler::handle(const std::string& messageId, const std::string& paylo
         // Try to parse as JSON
         json debugData = json::parse(payload);
         
-        if (debugData.contains("debug")) {
-            std::string debugCmd = debugData["debug"];
+        if (debugData.contains("command")) {
+            std::string debugCmd = debugData["command"];
             
             if (debugCmd == "print_payload") {
                 handlePrintPayload(messageId, debugData, system);
@@ -36,8 +36,8 @@ void DebugHandler::handle(const std::string& messageId, const std::string& paylo
         } else {
             json response = {
                 {"status", "error"},
-                {"message", "No 'debug' field found in payload"},
-                {"error_code", "MISSING_DEBUG_FIELD"}
+                {"message", "No 'command' field found in payload"},
+                {"error_code", "MISSING_COMMAND_FIELD"}
             };
             system.sendMessage(messageId, response.dump(), MessageType::Debug);
         }
@@ -61,7 +61,7 @@ void DebugHandler::handlePrintPayload(const std::string& messageId, const json& 
     
     json response = {
         {"status", "success"},
-        {"debug", "print_payload"},
+        {"command", "print_payload"},
         {"message", "Payload printed to server console"},
         {"timestamp", std::time(nullptr)}
     };
@@ -77,7 +77,7 @@ void DebugHandler::handleUptime(const std::string& messageId, const json& debugD
     
     json response = {
         {"status", "success"},
-        {"debug", "uptime"},
+        {"command", "uptime"},
         {"message", "Uptime info printed to server console"},
         {"current_timestamp", std::time(nullptr)}, // to be implemented
         {"uptime_seconds", "not_implemented"}
@@ -95,7 +95,7 @@ void DebugHandler::handleServerInfo(const std::string& messageId, const json& de
     
     json response = {
         {"status", "success"},
-        {"debug", "server_info"},
+        {"command", "server_info"},
         {"data", {
             {"server_running", system.isRunning()},
             {"client_connected", system.isClientConnected()},
