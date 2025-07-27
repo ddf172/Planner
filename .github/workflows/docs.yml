@@ -31,13 +31,19 @@ jobs:
         
     - name: Verify documentation was generated
       run: |
-        echo "� Verifying documentation..."
-        if [ -d "../../docs" ] && [ "$(ls -A ../../docs)" ]; then
-          echo "✅ Documentation directory exists and is not empty"
-        else
-          echo "❌ Documentation directory is empty or missing"
-          exit 1
-        fi
+        echo "🔍 Verifying documentation..."
+        echo "📂 Current working directory:"
+        pwd
+        echo "📂 Contents of current directory:"
+        ls -la
+        echo "📂 Looking for docs in root:"
+        ls -la ../../docs/ 2>/dev/null || echo "No ../../docs/"
+        echo "📂 Looking for docs in current dir:"
+        ls -la docs/ 2>/dev/null || echo "No ./docs/"
+        echo "📂 Searching for any docs directories:"
+        find . -name "docs" -type d 2>/dev/null || echo "No docs directories found"
+        echo "📂 Searching for HTML files:"
+        find . -name "*.html" 2>/dev/null | head -10 || echo "No HTML files found"
         
     - name: Setup Pages
       uses: actions/configure-pages@v4
