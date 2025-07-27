@@ -116,3 +116,7 @@ AlgorithmScanner& System::getAlgorithmScanner() {
 AlgorithmRunner& System::getAlgorithmRunner() {
     return algorithmRunner;
 }
+
+void System::test() {
+    std::cout << "Test method called" << std::endl;
+}
