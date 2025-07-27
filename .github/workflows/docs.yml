@@ -8,16 +8,14 @@ on:
       - 'server/workspace/include/**'
       - 'server/workspace/Doxyfile'
       - '.github/workflows/docs.yml'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - 'server/workspace/src/**'
-      - 'server/workspace/include/**'
-      - 'server/workspace/Doxyfile'
 
 jobs:
   docs:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
     
     steps:
     - name: Checkout repository
@@ -51,26 +49,15 @@ jobs:
           exit 1
         fi
         
-    - name: Commit and push documentation
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Upload to GitHub Pages
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: ./docs
         
-        # Check if there are changes to commit
-        if git diff --quiet && git diff --staged --quiet; then
-          echo "📝 No changes to documentation detected"
-        else
-          echo "📝 Committing documentation updates..."
-          git add docs/
-          git commit -m "📚 Auto-update documentation via GitHub Actions
-          
-          - Generated from latest source code
-          - Cleared previous docs and regenerated
-          - Triggered by: ${{ github.event_name }} on ${{ github.ref_name }}"
-          
-          echo "🚀 Pushing changes..."
-          git push
-          echo "✅ Documentation updated and pushed"
-        fi
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
+

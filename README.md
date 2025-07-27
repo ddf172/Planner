@@ -25,6 +25,6 @@ make
 ```bash
 cd server/workspace
 doxygen Doxyfile
-# Output in doxy/html/
+# Output automatically updated via GitHub Actions
 ```
 📖 **[Browse Full Documentation](https://ddf172.github.io/Planner/)** | 🏛️ **[View Class Diagrams](https://ddf172.github.io/Planner/inherits.html)**

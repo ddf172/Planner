@@ -22,9 +22,40 @@ jobs:
     - name: Build server
       run: |
         echo "🔨 Building server..."
-        cd server
+        cd server/workspace
         mkdir -p build
         cd build
         cmake ..
         make -j$(nproc)
         echo "✅ Server built successfully"
+        
+    - name: Test server (if tests exist)
+      run: |
+        cd server/workspace/build
+        if [ -f "tests" ]; then
+          echo "🧪 Running tests..."
+          ./tests
+        else
+          echo "ℹ️ No tests found, skipping test phase"
+        fi
+        
+    - name: Verify executable
+      run: |
+        cd server/workspace/build
+        if [ -f "server" ]; then
+          echo "✅ Server executable created successfully"
+          ls -la server
+        else
+          echo "❌ Server executable not found"
+          exit 1
+        fi
+        
+    - name: Clean up build artifacts
+      run: |
+        echo "🧹 Cleaning up build artifacts..."
+        rm -rf server/workspace/build
+        find . -name "*.o" -delete 2>/dev/null || true
+        find . -name "*.obj" -delete 2>/dev/null || true
+        find . -name "CMakeCache.txt" -delete 2>/dev/null || true
+        find . -name "CMakeFiles" -type d -exec rm -rf {} + 2>/dev/null || true
+        echo "✅ Build artifacts cleaned up"
