@@ -34,9 +34,6 @@ jobs:
         echo "� Verifying documentation..."
         if [ -d "../../docs" ] && [ "$(ls -A ../../docs)" ]; then
           echo "✅ Documentation directory exists and is not empty"
-          echo "📋 Generated files:"
-          ls -la ../../docs/
-        else
         else
           echo "❌ Documentation directory is empty or missing"
           exit 1
