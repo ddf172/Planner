@@ -12,8 +12,7 @@ Automatically generates Doxygen documentation whenever:
 2. 📚 **Installs Doxygen** and GraphViz on Ubuntu 
 3. 🔨 **Generates fresh documentation** from current source code
 4. ✅ **Verifies** that documentation was generated successfully
-5. 💾 **Commits and pushes** updated documentation
-6. 🚀 **Deploys to GitHub Pages** automatically
+5. � **Deploys directly to GitHub Pages** (without committing to repo)
 
 ### Triggers:
 - `push` to `main` with changes in source code
@@ -40,14 +39,14 @@ Tests whether the project compiles on every push and pull request.
 After pushing code to GitHub:
 1. Build workflow checks if code compiles successfully
 2. Documentation workflow generates fresh documentation
-3. Documentation is automatically committed and pushed back
-4. **GitHub Pages is automatically updated** with new docs
+3. **GitHub Pages is automatically updated** with new docs (no commits to repo)
 
 ## 📋 Requirements
 
 - Repository must have **"Allow GitHub Actions to create and approve pull requests"** enabled in Settings
 - **GitHub Pages must be enabled** in repository Settings → Pages → Source: "GitHub Actions"
 - Branch `main` should be set as the default branch
+- **No `docs/` folder needed in repository** - documentation is generated and deployed automatically
 
 ## ⚙️ Setup Instructions
 
