@@ -22,24 +22,21 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y doxygen graphviz
         
-    - name: Clear existing documentation
-      run: |
-        echo "🗑️ Clearing existing docs directory..."
-        rm -rf docs/*
-        echo "✅ docs directory cleared"
-        
     - name: Generate Doxygen documentation
       run: |
-        echo "📚 Generating Doxygen documentation..."
+        echo "� Generating Doxygen documentation..."
         cd server/workspace
         doxygen Doxyfile
         echo "✅ Documentation generated"
         
     - name: Verify documentation was generated
       run: |
-        echo "🔍 Verifying documentation..."
-        if [ -d "docs" ] && [ "$(ls -A docs)" ]; then
+        echo "� Verifying documentation..."
+        if [ -d "../../docs" ] && [ "$(ls -A ../../docs)" ]; then
           echo "✅ Documentation directory exists and is not empty"
+          echo "📋 Generated files:"
+          ls -la ../../docs/
+        else
         else
           echo "❌ Documentation directory is empty or missing"
           exit 1

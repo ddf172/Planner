@@ -1,7 +1,0 @@
-<map id="IMessageHandler" name="IMessageHandler">
-<area shape="rect" id="node1" title=" " alt="" coords="403,5,619,185"/>
-<area shape="rect" id="node2" href="$classAlgorithmHandler.html" title=" " alt="" coords="5,233,240,384"/>
-<area shape="rect" id="node3" href="$classCommandHandler.html" title=" " alt="" coords="264,233,499,384"/>
-<area shape="rect" id="node4" href="$classDataHandler.html" title=" " alt="" coords="523,233,757,384"/>
-<area shape="rect" id="node5" href="$classDebugHandler.html" title=" " alt="" coords="781,233,1016,384"/>
-</map>
