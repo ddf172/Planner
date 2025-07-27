@@ -22,9 +22,7 @@ make
 ```
 
 ### Generate Documentation
-```bash
-cd server/workspace
-doxygen Doxyfile
-# Output automatically updated via GitHub Actions
-```
+Documentation is automatically generated and deployed via GitHub Actions.
+- **Live Documentation:** https://ddf172.github.io/Planner/
+- **Auto-update:** Every push to `main` triggers fresh documentation generation
 📖 **[Browse Full Documentation](https://ddf172.github.io/Planner/)** | 🏛️ **[View Class Diagrams](https://ddf172.github.io/Planner/inherits.html)**

@@ -101,10 +101,4 @@ public:
      * @return Reference to algorithm runner
      */
     AlgorithmRunner& getAlgorithmRunner();
-
-    /**
-     * @brief Test method
-     * This is a placeholder for any test functionality you might want to implement.
-     */
-    void test();
 };
