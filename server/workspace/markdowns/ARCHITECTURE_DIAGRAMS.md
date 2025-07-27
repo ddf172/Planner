@@ -11,42 +11,44 @@ main()
   │
   ├─ System system(8080)
   │   │
-  │   ├─ ServerSocket serverSocket(8080)                    // 1️⃣ FIRST
-  │   │   ├─ socket() + bind() + listen()
-  │   │   ├─ receiveThread = thread(&receiveMessages)       // Background thread starts
-  │   │   └─ sendThread = thread(&sendMessages)             // Background thread starts
-  │   │
-  │   ├─ MessageProcessor messageProcessor(this)            // 2️⃣ SECOND  
+  │   ├─ MessageProcessor messageProcessor(this, 8080)      // 1️⃣ FIRST - OWNS ServerSocket!
   │   │   ├─ system = this (pointer stored)
-  │   │   └─ serverSocket = nullptr (will be set later)
+  │   │   ├─ serverSocket = unique_ptr<ServerSocket>(8080)  // 🎯 OWNED BY MessageProcessor
+  │   │   │   ├─ socket() + bind() + listen()
+  │   │   │   ├─ receiveThread = thread(&receiveMessages)   // Background thread starts
+  │   │   │   └─ sendThread = thread(&sendMessages)         // Background thread starts
+  │   │   │
+  │   │   └─ Setup internal callbacks:
+  │   │       ├─ setOnConnectedCallback(onClientConnected)  // MessageProcessor handles
+  │   │       └─ setOnDisconnectedCallback(onClientDisconnected) // MessageProcessor handles
   │   │
-  │   └─ Setup direct connection:
-  │       ├─ serverSocket.setOnConnectedCallback(...)       // Only for notifications
-  │       ├─ serverSocket.setOnDisconnectedCallback(...)    // Only for notifications
-  │       └─ messageProcessor.setServerSocket(&serverSocket) // DIRECT ACCESS!
+  │   ├─ HandlerDispatcher dispatcher                       // 2️⃣ SECOND
+  │   ├─ AlgorithmScanner algorithmScanner                  // 3️⃣ THIRD  
+  │   └─ AlgorithmRunner algorithmRunner                    // 4️⃣ FOURTH
   │
   ├─ system.registerHandler(DataHandler)
-  │   └─ messageProcessor.registerHandler(DATA, handler)
+  │   └─ dispatcher.registerHandler(DATA, handler)
   │
   ├─ system.registerHandler(DebugHandler) 
-  │   └─ messageProcessor.registerHandler(DEBUG, handler)
+  │   └─ dispatcher.registerHandler(DEBUG, handler)
   │
   ├─ system.registerHandler(CommandHandler)
-  │   └─ messageProcessor.registerHandler(COMMAND, handler)
+  │   └─ dispatcher.registerHandler(COMMAND, handler)
   │
   ├─ system.start()
   │   └─ messageProcessor.start()
   │       └─ processingThread = thread(&processLoop)        // Main processing thread
   │
   └─ while(!connected) { system.acceptConnection() }
-      └─ serverSocket.accept() [BLOCKING until client connects]
+      └─ messageProcessor.acceptConnection() 
+          └─ serverSocket->accept() [BLOCKING until client connects]
 
 Final State:
 ┌─────────────────┐                    ┌─────────────────┐
-│   ServerSocket  │◀──DIRECT ACCESS───▶│ MessageProcessor│
-│                 │                    │                 │
-│ 🧵 receiveThread│                    │ 🧵 processThread│
-│ 🧵 sendThread   │                    │                 │
+│ MessageProcessor│ OWNS              │   ServerSocket  │
+│                 │◀─────────────────▶│                 │
+│🧵 processThread │                    │ 🧵 receiveThread│
+│                 │                    │ 🧵 sendThread   │
 │                 │                    │                 │
 │ ⏳ waiting for  │                    │ 🔄 waiting on   │
 │   client data   │                    │   condition var │
@@ -70,27 +72,34 @@ Client connects to port 8080
 main() loop: system.acceptConnection()
   │
   ▼
-ServerSocket::accept()
+System::acceptConnection()
   │
-  ├─ select() with 500ms timeout
-  ├─ ::accept() - get clientSocket fd
-  ├─ connected = true
-  └─ onConnectedCallback() ──────────────▶ System::onClientConnected()
-                                              │
-                                              ▼
-                                         "Client connected" printed
+  └─ messageProcessor.acceptConnection()
+      │
+      ▼
+MessageProcessor::acceptConnection()
+  │
+  └─ serverSocket->accept()
+      │
+      ├─ select() with 500ms timeout
+      ├─ ::accept() - get clientSocket fd
+      ├─ connected = true
+      └─ onConnectedCallback() ──────────────▶ MessageProcessor::onClientConnected()
+                                                      │
+                                                      ▼
+                                                 "MessageProcessor: Client connected" printed
 
 Final State - Client Connected:
 ┌─────────────────┐                    ┌─────────────────┐
-│   ServerSocket  │◀──DIRECT ACCESS───▶│ MessageProcessor│
+│ MessageProcessor│ OWNS               │   ServerSocket  │
+│                 │◀──────────────────▶│                 │
+│ 🧵 processThread│                    │ 🧵 receiveThread│
+│                 │                    │ 🧵 sendThread   │
 │                 │                    │                 │
-│ 🧵 receiveThread│                    │ 🧵 processThread│
-│ 🧵 sendThread   │                    │                 │
-│                 │                    │                 │
-│ ✅ clientSocket │                    │ 🔄 waiting on   │
-│   established   │                    │   condition var │
-│ receiveQueue    │◀──getters for─────│ (event-driven)  │
-│ receiveCondition│◀──direct access───│                 │
+│ 🔄 waiting on   │                    │ ✅ clientSocket │
+│   condition var │                    │   established   │
+│ (event-driven)  │                    │ receiveQueue    │
+│                 │                    │ receiveCondition│
 └─────────────────┘                    └─────────────────┘
 ```
 
@@ -106,7 +115,7 @@ Final State - Client Connected:
 Client sends JSON message
   │
   ▼
-ServerSocket::receiveMessages() [Background Thread]
+MessageProcessor::serverSocket->receiveMessages() [Background Thread]
   │
   ├─ recv() from clientSocket
   ├─ Parse JSON to MessageFrame
@@ -118,10 +127,10 @@ ServerSocket::receiveMessages() [Background Thread]
   
 MessageProcessor::processLoop() [Background Thread]
   │
-  ├─ Check if serverSocket exists               // Safely handle nullptr
+  ├─ Check if serverSocket exists               // Safely handle unique_ptr
   │   └─ if (!serverSocket) sleep(100ms) & continue
   │
-  ├─ lock(serverSocket->getReceiveMutex())      // 🔒 Direct access to ServerSocket
+  ├─ lock(serverSocket->getReceiveMutex())      // 🔒 Direct access to owned ServerSocket
   │
   ├─ serverSocket->getReceiveCondition().wait_for(lock, 100ms, [predicate]{ 
   │    // Wait until queue has messages OR processor stopped OR socket disconnected
@@ -171,10 +180,10 @@ SIMPLIFIED ARCHITECTURE:
 │                         MESSAGE SENDING FLOW                                │
 └─────────────────────────────────────────────────────────────────────────────┘
 
-Handler calls: system.sendResponse(messageId, payload, type)
+Handler calls: system.sendMessage(messageId, payload, type)
   │
   ▼
-System::sendResponse()
+System::sendMessage()
   │
   └─ messageProcessor.sendMessage(messageId, payload, type)
       │
@@ -183,10 +192,10 @@ System::sendResponse()
       │   └─ fragment.header.messageId = messageId
       │
       └─ for(fragment : fragments)
-          └─ serverSocket->sendMessage(fragment)    // DIRECT CALL!
+          └─ serverSocket->sendMessage(fragment)    // DIRECT CALL to owned ServerSocket!
               │
               ▼
-          ServerSocket::sendMessage(fragment)
+          MessageProcessor::serverSocket->sendMessage(fragment)
               │
               ├─ lock(sendMutex)
               ├─ sendQueue.push(fragment)
@@ -194,7 +203,7 @@ System::sendResponse()
               └─ sendCondition.notify_all()         // Wake up sendThread
 
 
-ServerSocket::sendMessages() [Background Thread]
+MessageProcessor::serverSocket->sendMessages() [Background Thread]
   │
   ├─ lock(sendMutex)
   ├─ sendCondition.wait_for(...)                   // Wait for messages
@@ -226,20 +235,22 @@ Handler → System → MessageProcessor → ServerSocket (DIRECT!) → Client
     │                          
     ▼                          
 ┌─────────────────┐            ┌─────────────────┐
-│   ServerSocket  │            │ MessageProcessor│
+│ MessageProcessor│            │   ServerSocket  │
+│                 │ OWNS       │                 │
+│ 🧵 processThread│◀──────────▶│ 🧵 receiveThread│
+│                 │            │ receiveQueue    │
+│                 │            │ receiveMutex    │
+│                 │            │ receiveCondition│
 │                 │            │                 │
-│ 🧵 receiveThread│            │ 🧵 processThread│
-│ receiveQueue    │            │ inputQueue      │
-│ receiveMutex    │            │ inputMutex      │
-│ receiveCondition│            │                 │
-│                 │            │ ├─ wait(predicate)
-│                 │            │ ├─ transfer queue
-│                 │            │ ├─ assemble     │
-│                 │            │ ├─ dispatch     │
-│                 │            │ └─ CommandHandler│
-│                 │  sendMessage() │◀────────────│
-│ 🧵 sendThread   │◀─────────────────│ (DIRECT!) │
-│ sendQueue       │            │                 │
+│ ├─ wait(predicate)           │                 │
+│ ├─ transfer queue            │                 │
+│ ├─ assemble                  │                 │
+│ ├─ dispatch                  │                 │
+│ └─ CommandHandler            │                 │
+│                 │ sendMessage()│                │
+│                 │◀─────────────────────────────│
+│                 │            │ 🧵 sendThread   │
+│                 │            │ sendQueue       │
 └─────────────────┘            └─────────────────┘
     ▲                          
     │ {"messageId":"cmd-ping-001",
@@ -248,16 +259,16 @@ Handler → System → MessageProcessor → ServerSocket (DIRECT!) → Client
 📱 CLIENT                    
 
 Timeline:
-1. Client sends "ping" → ServerSocket receives → adds to receiveQueue → notifies
+1. Client sends "ping" → MessageProcessor's ServerSocket receives → adds to receiveQueue → notifies
 2. MessageProcessor waits on receiveCondition with predicate → wakes up → transfers messages
-3. MessageProcessor assembles → dispatches to CommandHandler
-4. CommandHandler processes → calls system.sendResponse("pong")
+3. MessageProcessor assembles → dispatches to System → HandlerDispatcher → CommandHandler
+4. CommandHandler processes → calls system.sendMessage("pong")
 5. System → MessageProcessor → serverSocket->sendMessage() → ServerSocket adds to sendQueue  
 6. ServerSocket sends "pong" → Client receives response
 
 🔄 The cycle can repeat infinitely with different message types and handlers
 
-🎯 KEY: Event-driven architecture with direct communication!
+🎯 KEY: MessageProcessor OWNS ServerSocket - cleaner ownership model!
 ```
 
 ---
@@ -283,17 +294,10 @@ CommandHandler::handleStopCommand       // For client-initiated shutdown
 system.stop()                          // Called from main thread or detached thread
   │
   ├─ running = false
-  ├─ serverSocket.disconnect()          // First disconnect client
-  │   ├─ connected = false
-  │   ├─ Close socket (shutdown + close)
-  │   └─ Call onDisconnectedCallback()
-  │
-  ├─ messageProcessor.setServerSocket(nullptr) // Clear socket reference
   │
   └─ messageProcessor.stop()
       │
       ├─ running = false
-      ├─ inputCondition.notify_all()          // Wake up processLoop
       ├─ serverSocket->getReceiveCondition().notify_all() // Wake up waits
       │
       ├─ Check if called from processThread    // CRITICAL: Prevent deadlock
@@ -302,20 +306,23 @@ system.stop()                          // Called from main thread or detached th
       │   └─ else
       │       └─ processingThread.join()       // Safe to join from another thread
       │
-      └─ serverSocket = nullptr               // Clear socket reference
+      └─ serverSocket = nullptr               // Clear owned ServerSocket
 
 
 ~System() destructor
   │
-  ├─ ~MessageProcessor()
-  │   └─ stop() [already called]
-  │
-  └─ ~ServerSocket()
+  └─ ~MessageProcessor()
       │
-      ├─ disconnect() if still connected
-      ├─ running = false
-      ├─ Notify all condition variables
+      ├─ stop() [already called]
       │
+      └─ ~serverSocket (unique_ptr)
+          │
+          └─ ~ServerSocket()
+              │
+              ├─ disconnect() if still connected
+              ├─ running = false
+              ├─ Notify all condition variables
+              │
       ├─ receiveThread.join() with try-catch   // Safely join threads
       ├─ sendThread.join() with try-catch
       │
@@ -351,41 +358,44 @@ Network → receiveQueue → localQueue → System::handleCompleteMessage() → 
 ```
 
 ### **🎭 Component Roles**
-- **System**: Coordinator, configuration, HandlerDispatcher management
-- **ServerSocket**: Network I/O, connection management, exposes queues and synchronization primitives
-- **MessageProcessor**: Message assembly via DIRECT ServerSocket access (no intermediate queues)
+- **System**: High-level coordinator, HandlerDispatcher management, algorithm management
+- **MessageProcessor**: OWNS ServerSocket, message assembly, network connection management
+- **ServerSocket**: Network I/O, connection management, exposes queues and synchronization primitives  
 - **HandlerDispatcher**: Centralized message routing (in System component)
 - **Handlers**: Business logic, response generation
 
-### **🚀 Direct Communication Pattern**
+### **🚀 Ownership-Based Communication Pattern**
 ```
 ┌─────────────────┐                    ┌─────────────────┐
-│   ServerSocket  │◀──getReceiveQueue()─│ MessageProcessor│
-│                 │◀──getReceiveMutex()─│                 │
-│ receiveQueue    │◀──getReceiveCondition()│              │
-│ sendQueue       │◀──sendMessage()────│                 │
+│ MessageProcessor│ OWNS               │   ServerSocket  │
+│                 │◀──────────────────▶│                 │
+│ 🧵 processThread│                    │ 🧵 receiveThread│
+│                 │                    │ 🧵 sendThread   │
+│                 │                    │ receiveQueue    │
+│                 │                    │ sendQueue       │
 └─────────────────┘                    └─────────────────┘
-                                               │
-                                               ▼
-                                      ┌─────────────────┐
-                                      │     System      │
-                                      │                 │
-                                      │ HandlerDispatcher│
-                                      │ handleCompleteMessage()│
-                                      └─────────────────┘
+         │
+         ▼
+┌─────────────────┐
+│     System      │
+│                 │
+│ HandlerDispatcher│
+│ handleCompleteMessage()│
+└─────────────────┘
 
-✅ MessageProcessor directly accesses ServerSocket queues and synchronization
+✅ MessageProcessor OWNS ServerSocket via unique_ptr - clear ownership
 ✅ Event-driven with condition variables and predicates  
-✅ NO intermediate inputQueue/inputMutex complexity
+✅ NO setServerSocket() complexity - ownership established in constructor
 ✅ Efficient: minimal lock time, process outside locks
 ✅ HandlerDispatcher in System for better separation of concerns
+✅ Connection callbacks handled internally by MessageProcessor
 ```
 
 ### **🛡️ Robust Shutdown Sequence**
 ```
 ✅ Never call system.stop() from MessageProcessor thread (use detached thread)
 ✅ Check thread identity in stop() methods to avoid self-joining
-✅ Clear null references before stopping components
+✅ unique_ptr automatically cleans up ServerSocket
 ✅ Use try-catch in all callbacks and critical operations
 ✅ Proper notification of all condition variables during shutdown
 ✅ Lock-free shutdown flag checking (atomic variables)
@@ -398,6 +408,7 @@ Network → receiveQueue → localQueue → System::handleCompleteMessage() → 
 ✅ Callbacks are wrapped in try-catch to prevent crashes
 ✅ Condition variables always used with predicates to prevent lost wakeups
 ✅ Timeouts on waits to prevent indefinite blocking
+✅ RAII principles with unique_ptr for automatic resource management
 ```
 
 This architecture ensures **thread safety**, **performance**, **simplicity**, **robustness against shutdown races** and **maintainability**! 🚀

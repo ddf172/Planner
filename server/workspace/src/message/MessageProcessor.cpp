@@ -4,9 +4,26 @@
 #include <iostream>
 #include <chrono>
 
-MessageProcessor::MessageProcessor(System* sys) 
-    : running(false), system(sys), serverSocket(nullptr) {
-    std::cout << "MessageProcessor initialized" << std::endl;
+MessageProcessor::MessageProcessor(System* sys, int port) 
+    : running(false), system(sys), serverSocket(std::make_unique<ServerSocket>(port)) {
+    std::cout << "MessageProcessor initialized with ServerSocket on port " << port << std::endl;
+
+    setOnConnectedCallback([this]() {
+        try {
+            this->onClientConnected();
+        } catch (const std::exception& e) {
+            std::cerr << "Exception in onClientConnected callback: " << e.what() << std::endl;
+        }
+    });
+    
+    setOnDisconnectedCallback([this]() {
+        try {
+            this->onClientDisconnected();
+        } catch (const std::exception& e) {
+            std::cerr << "Exception in onClientDisconnected callback: " << e.what() << std::endl;
+        }
+    });
+
 }
 
 MessageProcessor::~MessageProcessor() {
@@ -86,8 +103,40 @@ void MessageProcessor::sendMessage(const std::string& messageId, const std::stri
     }
 }
 
-void MessageProcessor::setServerSocket(ServerSocket* socket) {
-    serverSocket = socket;
+bool MessageProcessor::acceptConnection() {
+    if (serverSocket) {
+        return serverSocket->accept();
+    }
+    return false;
+}
+
+bool MessageProcessor::isClientConnected() const {
+    if (serverSocket) {
+        return serverSocket->isConnected();
+    }
+    return false;
+}
+
+void MessageProcessor::onClientConnected() {
+    std::cout << "MessageProcessor: Client connected" << std::endl;
+    // Możemy tutaj dodać logikę specyficzną dla MessageProcessor
+}
+
+void MessageProcessor::onClientDisconnected() {
+    std::cout << "MessageProcessor: Client disconnected" << std::endl;
+    // Możemy tutaj dodać logikę specyficzną dla MessageProcessor
+}
+
+void MessageProcessor::setOnConnectedCallback(std::function<void()> callback) {
+    if (serverSocket) {
+        serverSocket->setOnConnectedCallback(callback);
+    }
+}
+
+void MessageProcessor::setOnDisconnectedCallback(std::function<void()> callback) {
+    if (serverSocket) {
+        serverSocket->setOnDisconnectedCallback(callback);
+    }
 }
 
 void MessageProcessor::processLoop()

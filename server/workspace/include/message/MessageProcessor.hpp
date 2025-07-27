@@ -24,12 +24,16 @@ private:
     // Message processing components
     MessageAssembler assembler;
     MessageFragmenter fragmenter;
+
+    // Callbacks
+    void onClientConnected();
+    void onClientDisconnected();
     
     // Reference to system for handlers
     System* system;
     
-    // Reference to ServerSocket for direct queue access
-    ServerSocket* serverSocket;
+    // Owned ServerSocket for network communication
+    std::unique_ptr<ServerSocket> serverSocket;
     
     // Main processing loop
     void processLoop();
@@ -39,7 +43,7 @@ private:
     void handleCompleteMessage(const std::string& messageId, const std::string& payload, MessageType type);
 
 public:
-    MessageProcessor(System* sys);
+    MessageProcessor(System* sys, int port);
     ~MessageProcessor();
     
     // Control methods
@@ -47,8 +51,13 @@ public:
     void stop();
     bool isRunning() const;
     
-    // Configuration methods
-    void setServerSocket(ServerSocket* socket);
+    // Network methods
+    bool acceptConnection();
+    bool isClientConnected() const;
+    void setOnConnectedCallback(std::function<void()> callback);
+    void setOnDisconnectedCallback(std::function<void()> callback);
+    
+    // Configuration methods - REMOVED setServerSocket
     
     // Message handling
     void sendMessage(const std::string& messageId, const std::string& payload, MessageType type);

@@ -5,7 +5,6 @@
 #include <atomic>
 #include <thread>
 #include <chrono>
-#include "network/ServerSocket.hpp"
 #include "message/MessageProcessor.hpp"
 #include "control/IMessageHandler.hpp"
 #include "control/HandlerDispatcher.hpp"
@@ -14,7 +13,6 @@
 
 class System {
 private:
-    ServerSocket serverSocket;
     MessageProcessor messageProcessor;
     HandlerDispatcher dispatcher;
     AlgorithmScanner algorithmScanner;
@@ -22,10 +20,6 @@ private:
     
     std::vector<std::unique_ptr<IMessageHandler>> handlers;
     std::atomic<bool> running;
-    
-    // Internal callback methods
-    void onClientConnected();
-    void onClientDisconnected();
     
 public:
     System(int port);

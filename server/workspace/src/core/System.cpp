@@ -2,27 +2,7 @@
 #include <iostream>
 #include <chrono>
 
-System::System(int port) : serverSocket(port), messageProcessor(this), running(false) {
-    // Set up ServerSocket callbacks for connection events
-    serverSocket.setOnConnectedCallback([this]() {
-        try {
-            this->onClientConnected();
-        } catch (const std::exception& e) {
-            std::cerr << "Exception in onClientConnected callback: " << e.what() << std::endl;
-        }
-    });
-    
-    serverSocket.setOnDisconnectedCallback([this]() {
-        try {
-            this->onClientDisconnected();
-        } catch (const std::exception& e) {
-            std::cerr << "Exception in onClientDisconnected callback: " << e.what() << std::endl;
-        }
-    });
-    
-    // Give MessageProcessor access to ServerSocket for direct queue access
-    messageProcessor.setServerSocket(&serverSocket);
-    
+System::System(int port) : messageProcessor(this, port), running(false) {
     std::cout << "System initialized on port " << port << std::endl;
 }
 
@@ -55,14 +35,6 @@ void System::stop() {
     running.store(false);
     
     try {
-        if (serverSocket.isConnected()) {
-            std::cout << "Disconnecting client during system shutdown" << std::endl;
-            serverSocket.disconnect();
-        }
-        
-        std::cout << "Setting MessageProcessor serverSocket to nullptr" << std::endl;
-        messageProcessor.setServerSocket(nullptr);
-        
         std::cout << "Stopping MessageProcessor" << std::endl;
         messageProcessor.stop();
     }
@@ -74,7 +46,7 @@ void System::stop() {
 }
 
 bool System::acceptConnection() {
-    return serverSocket.accept();
+    return messageProcessor.acceptConnection();
 }
 
 void System::registerHandler(std::unique_ptr<IMessageHandler> handler) {
@@ -121,7 +93,7 @@ bool System::isRunning() const {
 }
 
 bool System::isClientConnected() const {
-    return serverSocket.isConnected();
+    return messageProcessor.isClientConnected();
 }
 
 void System::printStats() const {
@@ -131,20 +103,6 @@ void System::printStats() const {
     std::cout << "Message processor running: " << (messageProcessor.isRunning() ? "Yes" : "No") << std::endl;
     std::cout << "Handlers count: " << handlers.size() << std::endl;
     std::cout << "=========================" << std::endl;
-}
-
-void System::onClientConnected() {
-    std::cout << "Client connected" << std::endl;
-}
-
-void System::onClientDisconnected() {
-    std::cout << "Client disconnected" << std::endl;
-    
-    if (!running.load()) {
-        std::cout << "System is already shutting down - ignoring disconnect event" << std::endl;
-        return;
-    }
-    
 }
 
 void System::handleCompleteMessage(const std::string& messageId, const std::string& payload, MessageType type) {
